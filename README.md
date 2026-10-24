@@ -13,7 +13,7 @@ Built with [Astro](https://astro.build), deployed as static files to Cloudflare.
 
 ## Local development
 
-Requires Node.js 24 (current LTS, pinned in `.nvmrc`).
+Requires Node.js 24.16 or later on the 24 line (current LTS, pinned in `.nvmrc`).
 
 ```sh
 npm install
