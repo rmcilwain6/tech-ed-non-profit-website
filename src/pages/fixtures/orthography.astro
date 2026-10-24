@@ -1,0 +1,111 @@
+---
+// Orthography fixture (SPEC section 6). Renders Indigenous place names and
+// orthographies in every font weight in use, so a person can check the brand
+// fonts before launch. Uses its own minimal page until the shared layout (#6).
+import '../../brand/brand.css';
+import { brand } from '../../brand/brand.config';
+
+const samples = [
+  'Secwépemc',
+  'Lək̓ʷəŋən',
+  'xʷməθkʷəy̓əm',
+  'Sḵwx̱wú7mesh',
+  'səl̓ilw̓ətaʔɬ',
+];
+
+// Keep in step with the --font-weight-* tokens in src/brand/tokens.css.
+const weights = [
+  { label: 'Regular', token: '--font-weight-regular' },
+  { label: 'Bold', token: '--font-weight-bold' },
+];
+
+const families = [
+  { label: 'Body', token: '--font-body' },
+  { label: 'Heading', token: '--font-heading' },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href={brand.favicon} type="image/svg+xml" />
+    <title>Orthography fixture</title>
+  </head>
+  <body>
+    <main>
+      {brand.placeholder && <p class="label">Placeholder brand</p>}
+      <h1>Orthography fixture</h1>
+      <p>
+        Check that every character renders in the brand font, with no fallback
+        glyphs, boxes or misplaced marks. Combining marks (the comma above in k̓,
+        the line below in x̱) must sit on their letter.
+      </p>
+      {families.map((family) => (
+        <section>
+          <h2>{family.label} font</h2>
+          {weights.map((weight) => (
+            <>
+              <h3>{weight.label}</h3>
+              <ul
+                style={`font-family: var(${family.token}); font-weight: var(${weight.token});`}
+              >
+                {samples.map((sample) => (
+                  <li>{sample}</li>
+                ))}
+              </ul>
+            </>
+          ))}
+        </section>
+      ))}
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    line-height: var(--leading-normal);
+  }
+
+  main {
+    max-width: var(--width-prose);
+    margin-inline: auto;
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .label {
+    display: inline-block;
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    border: var(--border-width) dashed var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    margin-block-start: var(--space-7);
+  }
+
+  h3 {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    font-size: var(--text-3xl);
+  }
+</style>
