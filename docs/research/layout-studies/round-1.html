@@ -1,0 +1,930 @@
+<title>Layout Studies</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Overpass:wght@600;800&display=swap">
+<style>
+/* Layout: a lab bench. Controls on top, a resizable frame holding the live mock-up, then a study sheet for the chosen direction. */
+:root {
+  --paper: #f5f6f2;
+  --surface: #e7ebe4;
+  --ink: #1b2320;
+  --muted: #56605b;
+  --line: #c3cbc4;
+  --accent: #1d6670;
+  --on-accent: #ffffff;
+  --signal: #8f5d00;
+  --water: #cfe1e3;
+  --land: #dde2d7;
+
+  --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --f-mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+  --f-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-sign: "Overpass", "Arial", system-ui, sans-serif;
+
+  --dur: 240ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111614; --surface: #1c2320; --ink: #e4e9e5; --muted: #a3ada8; --line: #36413c;
+    --accent: #73c4cc; --on-accent: #0c1a1c; --signal: #e3b256; --water: #16292c; --land: #222a26;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111614; --surface: #1c2320; --ink: #e4e9e5; --muted: #a3ada8; --line: #36413c;
+  --accent: #73c4cc; --on-accent: #0c1a1c; --signal: #e3b256; --water: #16292c; --land: #222a26;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-underline-offset: 0.18em; }
+
+/* ---------- Shell ---------- */
+.lab { max-width: 82rem; margin: 0 auto; padding-block: 1.75rem 4rem; display: grid; gap: 1.5rem; }
+.lab-head { display: grid; gap: 0.5rem; }
+.lab-head h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5vw, 3rem); line-height: 1; letter-spacing: -0.02em; margin: 0; }
+.lab-head p { margin: 0; max-width: 64ch; }
+.lab-head .small { color: var(--muted); font-size: 0.95rem; }
+.kicker { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end; }
+.controls fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.controls legend { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; padding: 0; }
+.seg { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg label { position: relative; display: block; }
+.seg label + label { border-left: 1px solid var(--line); }
+.seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 0.5rem 0.9rem; font-size: 0.95rem; }
+.seg input:checked + span { background: var(--ink); color: var(--paper); }
+.seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: -3px; }
+.checks { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; padding-bottom: 0.4rem; }
+.checks label { display: flex; gap: 0.4rem; align-items: center; font-size: 0.95rem; }
+.checks input { accent-color: var(--accent); width: 1.05rem; height: 1.05rem; }
+
+.shared { font-size: 0.95rem; color: var(--muted); }
+.shared summary { cursor: pointer; color: var(--ink); }
+.shared ul { margin: 0.5rem 0 0; padding-left: 1.2rem; max-width: 70ch; }
+
+.frame-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
+.frame {
+  --w: 100%;
+  width: var(--w);
+  max-width: 100%;
+  height: min(80vh, 880px);
+  overflow: auto;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  container-type: inline-size;
+  container-name: site;
+  position: relative;
+  transition: width var(--dur) var(--ease);
+}
+
+.sheet { display: grid; gap: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+@media (min-width: 900px) { .sheet { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+.sheet h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; letter-spacing: -0.01em; margin: 0 0 0.25rem; }
+.sheet .sum { margin: 0 0 1rem; color: var(--muted); max-width: 60ch; }
+.facts { display: grid; gap: 0.9rem; margin: 0; }
+.facts div { display: grid; gap: 0.15rem; min-width: 0; }
+.facts dt { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; max-width: 64ch; }
+.keep { display: grid; gap: 1rem; align-content: start; min-width: 0; }
+.keep fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 0.75rem 1rem 1rem; margin: 0; }
+.keep legend { padding: 0 0.35rem; font-weight: 700; }
+.keep label { display: flex; gap: 0.55rem; align-items: flex-start; padding: 0.3rem 0; }
+.keep input[type="checkbox"] { accent-color: var(--accent); width: 1.05rem; height: 1.05rem; margin-top: 0.2rem; flex: none; }
+.keep textarea { width: 100%; min-height: 7rem; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 0.6rem; resize: vertical; }
+.keep .lbl { font-weight: 700; display: block; margin-bottom: 0.3rem; }
+.copy-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.lab-btn { font: inherit; font-weight: 700; background: var(--ink); color: var(--paper); border: 0; border-radius: 6px; padding: 0.6rem 1rem; cursor: pointer; }
+.copy-status { font-size: 0.9rem; color: var(--muted); }
+.copy-out { width: 100%; min-height: 8rem; font-family: var(--f-mono); font-size: 0.8rem; }
+.mix { font-size: 0.95rem; color: var(--muted); margin: 0; max-width: 60ch; }
+
+/* ---------- Shared mock-up pieces ---------- */
+.site { min-height: 100%; position: relative; color: var(--ink); background: var(--paper); }
+.site a { color: inherit; }
+.tk { font-family: var(--f-mono); font-size: 0.82em; font-weight: 400; letter-spacing: 0; text-transform: none; background: var(--surface); color: var(--ink); border: 1px dashed var(--muted); border-radius: 3px; padding: 0 0.3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.img-slot { aspect-ratio: var(--r); width: 100%; max-width: 100%; display: grid; place-items: center; padding: 1rem; text-align: center; font-family: var(--f-mono); font-size: 0.8rem; line-height: 1.4; color: var(--muted); border: 1px dashed var(--muted); background: repeating-linear-gradient(135deg, var(--land) 0 12px, var(--surface) 12px 24px); }
+.img-slot span { background: var(--paper); padding: 0.4rem 0.6rem; max-width: 30ch; }
+.ph-chip { display: inline-block; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid currentColor; padding: 0.1rem 0.45rem; border-radius: 3px; }
+.skip { position: absolute; left: 0.5rem; top: 0.5rem; z-index: 50; background: var(--ink); color: var(--paper) !important; padding: 0.5rem 0.75rem; transform: translateY(-200%); }
+.skip:focus { transform: none; }
+.theme-btn { font: inherit; font-size: 0.85rem; background: transparent; color: inherit; border: 1px solid currentColor; border-radius: 4px; padding: 0.25rem 0.55rem; cursor: pointer; white-space: nowrap; }
+.site ul.plain { list-style: none; padding: 0; margin: 0; }
+.site main:focus { outline: none; }
+.site h1:focus { outline: none; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.show-landmarks [data-landmark] { outline: 2px dashed var(--signal); outline-offset: -2px; position: relative; }
+.show-landmarks [data-landmark]::after { content: attr(data-landmark); position: absolute; right: 4px; top: 4px; z-index: 60; font: 600 0.7rem var(--f-mono); background: var(--signal); color: var(--paper); padding: 0.1rem 0.35rem; pointer-events: none; }
+
+/* ---------- Direction 1: Transect ---------- */
+.d-transect { font-family: var(--f-body); }
+.t-head { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--line); }
+.t-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; padding: 0.7rem 1rem 0.5rem; max-width: 76rem; margin: 0 auto; }
+.t-mark { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; margin-right: auto; text-decoration: none; }
+.t-nav ul { display: flex; flex-wrap: wrap; gap: 0.15rem 1rem; }
+.t-nav a { text-decoration: none; padding: 0.2rem 0; border-bottom: 2px solid transparent; }
+.t-nav a:hover { border-color: var(--line); }
+.t-nav a[aria-current="page"] { border-color: var(--accent); font-weight: 700; }
+.t-mini { position: relative; height: 22px; overflow: hidden; }
+.t-mini svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.t-mover { position: absolute; inset: 0; transform: translateX(calc(var(--p, 0.02) * 100%)); }
+.t-dot { position: absolute; left: 0; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 2px var(--paper); transform: translate(-5px, calc(var(--y, 11px) - 5px)); }
+
+.prof-land { fill: var(--land); }
+.prof-water { fill: var(--water); }
+.prof-line { fill: none; stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.prof-sea { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+
+.t-hero { max-width: 76rem; margin: 0 auto; padding: 2.75rem 1rem 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.t-hero h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 6.2cqi, 4.4rem); line-height: 1.02; letter-spacing: -0.025em; text-wrap: balance; max-width: 17ch; margin: 0.6rem 0 1.25rem; }
+.t-hero .lede { max-width: 52ch; font-size: 1.1rem; margin: 0; }
+.t-profile { position: relative; height: clamp(170px, 26cqi, 260px); margin: 1.5rem 0 0; }
+.t-profile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.t-reveal { position: absolute; inset: 0; background: var(--paper); transform-origin: right center; animation: t-reveal 1.5s var(--ease) 0.15s both; z-index: 1; }
+@keyframes t-reveal { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.t-lab { position: absolute; z-index: 2; transform: translateX(-50%); display: grid; justify-items: center; gap: 2px; font-family: var(--f-mono); font-size: 0.75rem; line-height: 1.2; text-align: center; white-space: nowrap; }
+.t-lab strong { font-family: var(--f-display); font-size: 1rem; font-weight: 800; }
+.t-lab .pin { width: 1px; height: 14px; background: var(--ink); }
+.t-feature { position: absolute; z-index: 2; transform: translateX(-50%); font-family: var(--f-mono); font-size: 0.7rem; font-style: italic; color: var(--muted); white-space: nowrap; }
+.t-caption { max-width: 76rem; margin: 0 auto; padding: 0.5rem 1rem 0; font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+.t-sec { max-width: 76rem; margin: 0 auto; padding: 3.25rem 1rem; }
+.t-sec h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.6rem, 3.4cqi, 2.2rem); letter-spacing: -0.015em; margin: 0 0 1.5rem; }
+.t-stations { list-style: none; margin: 0; padding: 0 0 0 1.5rem; display: grid; gap: 1.75rem; border-left: 2px solid var(--ink); }
+.t-stations li { position: relative; display: grid; gap: 0.35rem; }
+.t-stations li::before { content: ""; position: absolute; left: calc(-1.5rem - 7px); top: 0.3rem; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); transition: transform var(--dur) var(--ease); }
+.t-stations li:hover::before { transform: scale(1.35); }
+.t-stations .num { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.t-stations p { margin: 0; font-size: 1.12rem; font-weight: 700; line-height: 1.3; max-width: 26ch; }
+.t-stations a { font-size: 0.92rem; color: var(--accent); }
+@container site (min-width: 760px) {
+  .t-stations { grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 1.75rem 0 0; border-left: 0; border-top: 2px solid var(--ink); gap: 1.5rem; }
+  .t-stations li::before { left: 0; top: calc(-1.75rem - 7px); }
+}
+.t-vv { background: var(--surface); }
+.t-vv .t-sec { display: grid; gap: 1.5rem; align-items: center; }
+@container site (min-width: 760px) { .t-vv .t-sec { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 3rem; } }
+.t-vv h2 { margin-bottom: 0.75rem; }
+.t-vv p { margin: 0 0 1rem; max-width: 52ch; }
+.t-url { font-family: var(--f-mono); font-size: 0.9rem; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent); color: var(--on-accent) !important; text-decoration: none; font-weight: 700; padding: 0.75rem 1.15rem; border-radius: 6px; }
+.btn span { transition: transform var(--dur) var(--ease); }
+.btn:hover span { transform: translateX(4px); }
+.btn.ghost { background: transparent; color: var(--ink) !important; border: 2px solid var(--ink); }
+.t-regions { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+@container site (min-width: 620px) { .t-regions { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.t-regions li { display: grid; gap: 0.4rem; }
+.t-regions strong { font-family: var(--f-display); font-size: 1.6rem; font-weight: 800; }
+.t-regions .sub { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+.t-pos { height: 3px; background: var(--line); position: relative; margin-top: 0.4rem; }
+.t-pos i { position: absolute; top: -4px; width: 11px; height: 11px; border-radius: 50%; background: var(--signal); transform: translateX(-50%); }
+.t-cta { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; justify-content: space-between; border-top: 2px solid var(--ink); }
+.t-cta h2 { margin: 0; }
+.t-foot { background: var(--surface); margin-top: 1rem; }
+.t-foot-prof { height: 56px; position: relative; }
+.t-foot-prof svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: scaleY(-1); }
+.t-foot-prof .prof-land { fill: var(--paper); }
+.t-foot-in { max-width: 76rem; margin: 0 auto; padding: 1.5rem 1rem 2.5rem; display: grid; gap: 1.5rem; font-size: 0.95rem; }
+@container site (min-width: 700px) { .t-foot-in { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.t-foot-in h2 { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.4rem; font-weight: 400; }
+.t-foot-in p { margin: 0; }
+
+.t-page { max-width: 76rem; margin: 0 auto; padding: 2.5rem 1rem 3rem; }
+.t-page h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5.2cqi, 3.5rem); line-height: 1.04; letter-spacing: -0.02em; text-wrap: balance; margin: 0.5rem 0 1rem; max-width: 20ch; }
+.t-page .lede { font-size: 1.15rem; max-width: 56ch; margin: 0; }
+.t-page .t-profile { height: 70px; margin: 2rem 0 2.5rem; }
+.prose { max-width: 42rem; display: grid; gap: 2.25rem; }
+.prose section { display: grid; gap: 0.6rem; }
+.prose h2 { font-size: 1.4rem; margin: 0; }
+.prose p, .prose ul, .prose ol, .prose dl { margin: 0; }
+.prose li + li { margin-top: 0.35rem; }
+.t-note { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
+.cards { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); }
+.cards article { display: grid; gap: 0.35rem; align-content: start; }
+.cards h3 { margin: 0.4rem 0 0; font-size: 1.05rem; }
+.cards p { margin: 0; font-size: 0.92rem; }
+.timeline { display: grid; gap: 0.5rem; }
+.timeline div { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
+.timeline dt { font-weight: 700; }
+.timeline dd { margin: 0; }
+.faq dt { font-weight: 700; margin-top: 0.75rem; }
+.faq dd { margin: 0.2rem 0 0; }
+
+/* ---------- Direction 2: Field Notes ---------- */
+.d-field { font-family: var(--f-serif); font-size: 1.08rem; line-height: 1.6; }
+.f-head { max-width: 66rem; margin: 0 auto; padding: 1.4rem 1rem 0.7rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; border-bottom: 1px solid var(--ink); }
+.f-mark { font-weight: 600; font-size: 1.1rem; text-decoration: none; margin-right: auto; }
+.f-nav ul { display: flex; flex-wrap: wrap; gap: 0.2rem 1.1rem; font-family: var(--f-body); font-size: 0.95rem; }
+.f-nav a { text-decoration-color: var(--line); }
+.f-nav a[aria-current="page"] { font-weight: 700; text-decoration: underline 2px var(--accent); }
+.f-head .theme-btn { font-family: var(--f-body); }
+.f-wrap { max-width: 66rem; margin: 0 auto; padding: 2.25rem 1rem 1rem; display: grid; gap: 2.5rem; }
+.f-row { display: grid; gap: 0.75rem; min-width: 0; }
+@container site (min-width: 820px) { .f-row { grid-template-columns: minmax(0, 40rem) minmax(0, 14rem); column-gap: 3.5rem; } }
+.f-row > * { min-width: 0; }
+.f-main { display: grid; gap: 0.75rem; }
+.f-main p, .f-main ol, .f-main ul, .f-main dl, .f-main table, .f-main figure { margin: 0; }
+.f-note { font-family: var(--f-mono); font-size: 0.78rem; line-height: 1.5; color: var(--muted); border-left: 1px solid var(--line); padding-left: 0.75rem; align-self: start; }
+.f-note b { color: var(--ink); font-weight: 600; }
+.f-meta { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.d-field h1 { font-weight: 400; font-size: clamp(2rem, 5.6cqi, 3.5rem); line-height: 1.1; letter-spacing: -0.015em; text-wrap: balance; margin: 0; font-variation-settings: "opsz" 72; }
+.d-field h2 { font-size: 1.35rem; font-weight: 600; margin: 0; display: flex; gap: 0.6rem; align-items: baseline; }
+.d-field h2 .sec { font-family: var(--f-mono); font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+.f-pillars { padding-left: 1.6rem; }
+.f-pillars li { padding-left: 0.3rem; }
+.f-pillars li + li { margin-top: 0.4rem; }
+.f-pillars li::marker { font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); }
+figure figcaption { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+.f-table-wrap { overflow-x: auto; }
+.f-table { border-collapse: collapse; font-family: var(--f-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; min-width: 22rem; }
+.f-table th, .f-table td { text-align: left; padding: 0.4rem 1.25rem 0.4rem 0; border-bottom: 1px solid var(--line); }
+.f-table th { font-weight: 600; color: var(--muted); }
+.f-table td:first-child { font-family: var(--f-serif); font-size: 1rem; }
+.f-link { font-family: var(--f-body); font-weight: 700; color: var(--accent) !important; }
+.f-foot { max-width: 66rem; margin: 2rem auto 0; padding: 1.5rem 1rem 2.5rem; border-top: 1px solid var(--ink); display: grid; gap: 1.75rem; font-size: 0.95rem; }
+@container site (min-width: 720px) { .f-foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.f-foot h2 { font-family: var(--f-mono); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.5rem; }
+.f-foot p { margin: 0 0 0.4rem; }
+.receipt { font-family: var(--f-mono); font-size: 0.82rem; border: 1px dashed var(--muted); padding: 0.9rem 1rem; display: grid; gap: 0.1rem; max-width: 28rem; }
+.receipt div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dotted var(--line); padding: 0.25rem 0; }
+.receipt dt { color: var(--muted); }
+.receipt dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.receipt .rnote { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.45; }
+
+/* ---------- Direction 3: Trailhead ---------- */
+.d-trail { font-family: var(--f-body); }
+.r-head { background: var(--ink); color: var(--paper); }
+.r-head-in { max-width: 76rem; margin: 0 auto; padding: 0.8rem 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.25rem; }
+.r-head :focus-visible { outline-color: currentColor; }
+.r-mark { font-family: var(--f-sign); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none; margin-right: auto; }
+.r-nav ul { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.r-nav a { display: block; font-family: var(--f-sign); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; padding: 0.3rem 0.55rem; border-radius: 3px; }
+.r-nav a:hover { text-decoration: underline; }
+.r-nav a[aria-current="page"] { background: var(--paper); color: var(--ink); }
+.r-hero { max-width: 76rem; margin: 0 auto; padding: 2.5rem 1rem 1rem; display: grid; gap: 1.25rem; }
+.r-hero .lede { margin: 0; max-width: 56ch; font-size: 1.1rem; }
+.d-trail h1 { font-family: var(--f-sign); font-weight: 800; font-size: clamp(2.3rem, 7.5cqi, 5rem); line-height: 0.95; letter-spacing: -0.015em; text-wrap: balance; margin: 0; }
+.r-routes { list-style: none; margin: 0; padding: 0; border-top: 4px solid var(--ink); }
+.r-routes a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.2rem 1rem; padding: 1.15rem 0.25rem; border-bottom: 1px solid var(--line); text-decoration: none; }
+.r-routes .who { font-family: var(--f-sign); font-weight: 800; font-size: clamp(1.25rem, 3.4cqi, 2.05rem); line-height: 1.15; }
+.r-routes .dest { grid-column: 1; font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
+.r-routes .arrow { grid-row: 1 / span 2; grid-column: 2; font-family: var(--f-sign); font-weight: 800; font-size: 1.8rem; transition: transform var(--dur) var(--ease); }
+.r-routes a:hover .who { color: var(--accent); }
+.r-routes a:hover .arrow { transform: translateX(8px); }
+.r-sec { max-width: 76rem; margin: 0 auto; padding: 3rem 1rem; }
+.r-sec > h2 { font-family: var(--f-sign); font-weight: 800; font-size: clamp(1.5rem, 3.4cqi, 2.2rem); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 1.5rem; }
+.r-pillars { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem 2rem; }
+@container site (min-width: 640px) { .r-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.r-pillars li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 1rem; align-items: start; }
+.glyph { width: 44px; height: 44px; fill: var(--accent); }
+.r-pillars p { margin: 0; font-size: 1.1rem; font-weight: 700; line-height: 1.3; }
+.r-pillars a { font-size: 0.9rem; color: var(--accent); }
+.r-poster { background: var(--accent); color: var(--on-accent); }
+.r-poster .r-sec { display: grid; gap: 1.5rem; align-items: center; }
+@container site (min-width: 760px) { .r-poster .r-sec { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 3rem; } }
+.r-poster .for { font-family: var(--f-sign); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; margin: 0; }
+.r-poster .url { font-family: var(--f-sign); font-weight: 800; font-size: clamp(2.4rem, 8.5cqi, 5.2rem); line-height: 1; margin: 0.25rem 0 0.75rem; overflow-wrap: anywhere; }
+.r-poster p { margin: 0 0 1rem; max-width: 46ch; }
+.r-poster .btn { background: var(--paper); color: var(--ink) !important; }
+.r-poster .img-slot { border-color: var(--on-accent); }
+.r-post { display: grid; grid-template-columns: minmax(0, 1fr) 8px minmax(0, 1fr); row-gap: 0.6rem; max-width: 30rem; margin: 0 auto; }
+.r-post .pole { grid-column: 2; grid-row: 1 / span 4; background: var(--ink); border-radius: 2px; }
+.blade { font-family: var(--f-sign); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; background: var(--ink); color: var(--paper); padding: 0.55rem 1rem; display: flex; flex-direction: column; line-height: 1.15; transition: transform var(--dur) var(--ease); }
+.blade small { font-family: var(--f-mono); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.72rem; opacity: 0.85; }
+.blade.east { grid-column: 3; justify-self: start; padding-right: 2rem; clip-path: polygon(0 0, calc(100% - 1.1rem) 0, 100% 50%, calc(100% - 1.1rem) 100%, 0 100%); transform-origin: left center; }
+.blade.west { grid-column: 1; justify-self: end; padding-left: 2rem; text-align: right; clip-path: polygon(1.1rem 0, 100% 0, 100% 100%, 1.1rem 100%, 0 50%); transform-origin: right center; }
+.blade.east:hover { transform: rotate(-3deg); }
+.blade.west:hover { transform: rotate(3deg); }
+.r-post-cap { text-align: center; font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); margin: 1rem 0 0; }
+.r-contact { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; justify-content: space-between; border-top: 4px solid var(--ink); }
+.r-contact h2 { margin: 0 !important; }
+.r-foot { background: var(--ink); color: var(--paper); margin-top: 1rem; }
+.r-foot-in { max-width: 76rem; margin: 0 auto; padding: 2rem 1rem 2.5rem; display: grid; gap: 1.5rem; font-size: 0.95rem; }
+@container site (min-width: 700px) { .r-foot-in { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.r-foot-in h2 { font-family: var(--f-sign); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.4rem; }
+.r-foot-in p { margin: 0; }
+.r-foot :focus-visible { outline-color: currentColor; }
+.r-page { max-width: 76rem; margin: 0 auto; padding: 2rem 1rem 1rem; display: grid; gap: 1rem; }
+.r-crumbs { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0; }
+.r-crumbs li + li::before { content: "→"; margin-right: 0.4rem; }
+.r-page .lede { font-size: 1.15rem; max-width: 56ch; margin: 0; }
+.r-body { max-width: 76rem; margin: 0 auto; padding: 1.5rem 1rem 1rem; }
+.r-note { font-size: 0.88rem; color: var(--muted); font-style: italic; }
+.r-next h2 { font-family: var(--f-sign); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; font-size: 1rem; margin: 0 0 0.5rem; }
+
+/* ---------- Motion off ---------- */
+.rm *, .rm *::before, .rm *::after { animation: none !important; transition: none !important; }
+.rm .t-reveal { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .t-reveal { display: none; }
+}
+</style>
+
+<div class="lab">
+  <header class="lab-head">
+    <span class="kicker">Base layout · three directions</span>
+    <h1>Layout studies</h1>
+    <p>Three directions for the site's base layout, built with real content from the spec. Each one is a working mock-up: click through the navigation, switch themes, try phone width and tab through it with the keyboard.</p>
+    <p class="small">The colours and fonts are stand-ins, chosen so the three are easy to tell apart. The brand work replaces them. Judge the structure: how pages are put together, how you find your way around, and how each would feel to a teacher or a student.</p>
+  </header>
+
+  <div class="controls">
+    <fieldset>
+      <legend>Direction</legend>
+      <div class="seg" id="dir-seg">
+        <label><input type="radio" name="dir" id="dir-transect" value="transect" checked><span>1 · Transect</span></label>
+        <label><input type="radio" name="dir" id="dir-field-notes" value="field-notes"><span>2 · Field Notes</span></label>
+        <label><input type="radio" name="dir" id="dir-trailhead" value="trailhead"><span>3 · Trailhead</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Width</legend>
+      <div class="seg" id="width-seg">
+        <label><input type="radio" name="width" id="w-phone" value="390px"><span>Phone</span></label>
+        <label><input type="radio" name="width" id="w-tablet" value="768px"><span>Tablet</span></label>
+        <label><input type="radio" name="width" id="w-full" value="100%" checked><span>Full</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Check</legend>
+      <div class="checks">
+        <label><input type="checkbox" id="opt-rm"> Reduced motion</label>
+        <label><input type="checkbox" id="opt-lm"> Show landmarks</label>
+      </div>
+    </fieldset>
+  </div>
+
+  <details class="shared">
+    <summary>What all three already do</summary>
+    <ul>
+      <li>Navigation goes to separate pages and wraps onto a second line on phones. No hidden hamburger menu, so it works without JavaScript.</li>
+      <li>Skip link (press Tab inside the frame), visible focus, and a theme toggle that cycles System, Light and Dark.</li>
+      <li><code>[TK: …]</code> placeholders wherever the spec has no confirmed copy, and labelled image slots at their final aspect ratio.</li>
+      <li>Motion uses transform and opacity only, and switches off with reduced motion.</li>
+      <li>Everything here is drawn by a script for the prototype. On the real site, the drawings (like the Transect profile) are generated at build time as static SVG.</li>
+    </ul>
+  </details>
+
+  <div>
+    <div class="frame-meta"><span id="frame-label">Transect · Home</span><span id="frame-width">Full width</span></div>
+    <div class="frame" id="frame" tabindex="-1"></div>
+  </div>
+
+  <section class="sheet" id="sheet" aria-live="polite"></section>
+</div>
+
+<script>
+(() => {
+  // ---------- Content (from docs/SPEC.md; anything unconfirmed is a TK) ----------
+  const tk = (s) => `<span class="tk">[TK: ${s}]</span>`;
+  const slot = (r, note) => `<div class="img-slot" style="--r:${r.replace(':', ' / ')}"><span><strong>Image ${r}</strong><br>${note}</span></div>`;
+
+  const PILLARS = [
+    'Be an independent voice on technology in BC education.',
+    'Build lasting, face-to-face partnerships with educators and communities.',
+    'Help students understand, question and shape the digital world.',
+    'Empower young people to build their ideas now.',
+  ];
+  // Priority order (SPEC 2). x is the west-to-east position on the transect.
+  const REGIONS = [
+    { name: 'Kamloops', where: 'Interior · Thompson valley', lat: '50.67° N', lon: '120.33° W', x: 0.86 },
+    { name: 'Victoria', where: 'Vancouver Island', lat: '48.43° N', lon: '123.37° W', x: 0.06 },
+    { name: 'Vancouver', where: 'Lower Mainland coast', lat: '49.28° N', lon: '123.12° W', x: 0.27 },
+  ];
+  const NAV = [['home', 'Home'], ['about', 'About'], ['board', 'Board'], ['valleyview', 'Valleyview Grant'], ['funding', 'Funding'], ['contact', 'Contact']];
+  const NAME = tk('name');
+  const EMAIL = tk('organization email, created with the domain');
+
+  const PAGES = {
+    about: {
+      title: 'About',
+      lede: tk('mission statement, pending board ratification'),
+      sections: [
+        { h: 'What we stand for', html: `<ol class="f-pillars">${PILLARS.map((p) => `<li>${p}</li>`).join('')}</ol>`, note: '<b>Source:</b> four pillars adopted by board vote, 15 October 2026.' },
+        { h: 'How we work', html: '<p>Remote-first, and in person by choice. We work across three regions: Kamloops, Victoria and Vancouver.</p>', note: '<b>Source:</b> SPEC 7.2. Final wording pending.' },
+        { h: 'Our values', html: `<p>${tk('values statement covering skepticism of ed-tech business models, transparency, privacy by default, and face-to-face over platform')}</p>`, note: '<b>Pending:</b> wording needs approval by a person.' },
+      ],
+      next: ['board', 'contact'],
+    },
+    board: {
+      title: 'Board',
+      lede: tk('one-line introduction to the board'),
+      sections: [
+        { h: 'Members', html: `<div class="cards">${[1, 2, 3, 4].map(() => `<article>${slot('1:1', 'Portrait, natural light, original photo')}<h3>${tk('name')}</h3><p>${tk('board role')}</p><p>${tk('home region')}</p></article>`).join('')}</div>`, note: '<b>Rule:</b> a member is added only after they agree to their details. Git history is public.' },
+      ],
+      next: ['about', 'funding'],
+    },
+    valleyview: {
+      title: 'Valleyview Social Innovation Grant',
+      crumb: 'Students',
+      lede: `Funding plus mentorship for a graduating high school student with an idea. ${tk('award amount')}`,
+      sections: [
+        { h: 'Who can apply', html: `<p>Graduating high school students. ${tk('full eligibility, pending board')}</p>`, note: '<b>Short URL</b> for posters and school announcements: /valleyview' },
+        { h: 'What you get', html: `<p>Funding and mentorship. ${tk('award amount and what mentorship involves')}</p>` },
+        { h: 'The three questions', html: "<ol><li>What's the idea?</li><li>Why are you the right person to do it?</li><li>How will this help?</li></ol>", note: '<b>Source:</b> SPEC 7.4.' },
+        { h: 'Timeline', html: `<dl class="timeline"><div><dt>Applications open</dt><dd>${tk('date')}</dd></div><div><dt>Applications close</dt><dd>${tk('date')}</dd></div><div><dt>Recipients told</dt><dd>${tk('date')}</dd></div></dl>`, note: '<b>Later:</b> open / opening soon / closed status, computed from these dates.' },
+        { h: 'How to apply', html: `<p>${tk('how and when to apply, pending board decision D5')}</p>`, note: '<b>Pending D5:</b> no apply button until the board decides how applications are collected.' },
+        { h: 'Questions people ask', html: `<dl class="faq"><dt>I'm nervous about pitching.</dt><dd>${tk('answer')}</dd><dt>I don't think I'm qualified.</dt><dd>${tk('answer')}</dd></dl>`, note: "<b>Why:</b> these were the two barriers raised about last year's grant." },
+      ],
+      next: ['contact', 'about'],
+    },
+    funding: {
+      title: 'Funding',
+      crumb: 'Funders and partners',
+      lede: tk('funding values introduction, wording needs approval'),
+      sections: [
+        { h: 'How we fund our work', html: `<ul><li>No money from companies whose main business is selling ed-tech.</li><li>No single source large enough to shape what we say.</li><li>${tk('why we fund the organization this way')}</li></ul>`, note: '<b>Source:</b> strategic framework draft. Wording needs approval by a person.' },
+        { h: 'Who funds us', html: `<p>${tk('disclosure, pending board decision D11')}</p>`, note: '<b>Pending D11:</b> no funder names or amounts until the board decides.' },
+      ],
+      next: ['board', 'contact'],
+    },
+    contact: {
+      title: 'Contact',
+      lede: 'Email us. There is no form on this site.',
+      sections: [
+        { h: 'Email', html: `<p>${EMAIL}</p>`, note: '<b>Note:</b> the link opens your own mail app. This site collects nothing.' },
+        { h: 'What to contact us about', html: '<ul><li>Pro-D and workshops</li><li>School visits</li><li>Partnerships</li><li>The Valleyview Grant</li><li>Media</li></ul>', note: '<b>Source:</b> SPEC 7.6.' },
+      ],
+      next: ['about', 'valleyview'],
+    },
+    privacy: {
+      title: 'Privacy',
+      lede: 'This site collects no personal information and sets no cookies.',
+      sections: [
+        { h: 'What we collect', html: `<p>Nothing that identifies you. ${tk('anonymous page view counts and the tool, if one is used')}</p>` },
+        { h: 'Services we use', html: `<p>${tk('hosting and analytics providers, and where they are based')}</p>` },
+        { h: 'Your theme choice', html: '<p>If you choose light or dark mode, that choice is saved in your own browser only.</p>' },
+      ],
+      note: '<b>Pending:</b> privacy text needs approval by a person.',
+      next: ['contact', 'home'],
+    },
+  };
+  const titleOf = (id) => (id === 'home' ? 'Home' : PAGES[id].title);
+
+  // ---------- Shared helpers ----------
+  const navList = (page) => `<ul class="plain">${NAV.map(([id, label]) => `<li><a href="#" data-go="${id}"${id === page ? ' aria-current="page"' : ''}>${label}</a></li>`).join('')}</ul>`;
+  const skip = '<a class="skip" href="#" data-skip>Skip to content</a>';
+  const themeBtn = () => `<button type="button" class="theme-btn" data-theme-toggle>Theme: ${THEME_LABEL[theme]}</button>`;
+
+  // ---------- Transect profile: west (Victoria) to east (Kamloops), elevation in km ----------
+  const KEYS = [[0, 0.12], [0.03, 0.3], [0.07, 0.15], [0.105, 0], [0.245, 0], [0.27, 0.04], [0.3, 0.35], [0.35, 1.5], [0.4, 1.1], [0.45, 2.1], [0.5, 1.45], [0.56, 1.8], [0.61, 1.25], [0.67, 1.55], [0.73, 0.95], [0.79, 0.6], [0.86, 0.35], [0.91, 0.85], [0.96, 1.15], [1, 1.0]];
+  const elev = (x) => {
+    if (x > 0.105 && x < 0.245) return 0;
+    let i = 0;
+    while (i < KEYS.length - 2 && KEYS[i + 1][0] < x) i++;
+    const [x0, e0] = KEYS[i], [x1, e1] = KEYS[i + 1];
+    const base = e0 + ((x - x0) / (x1 - x0)) * (e1 - e0);
+    const n = Math.sin(x * 93) * 0.08 + Math.sin(x * 211 + 1.3) * 0.05 + Math.sin(x * 37 + 0.7) * 0.1;
+    return Math.max(0, base + n * Math.min(1, base / 0.4));
+  };
+  const MAXE = 2.4;
+  const yAt = (e, h) => h * 0.9 - (e / MAXE) * h * 0.78;
+  function profileSVG(h) {
+    const pts = [];
+    for (let i = 0; i <= 250; i++) { const x = i / 250; pts.push(`${(x * 1000).toFixed(1)},${yAt(elev(x), h).toFixed(1)}`); }
+    const line = 'M' + pts.join(' L');
+    const y0 = yAt(0, h).toFixed(1);
+    return `<svg viewBox="0 0 1000 ${h}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="prof-land" d="${line} L1000,${h} L0,${h} Z"/>
+      <rect class="prof-water" x="105" y="${y0}" width="140" height="${h}"/>
+      <line class="prof-sea" x1="105" x2="245" y1="${y0}" y2="${y0}"/>
+      <path class="prof-line" d="${line}"/>
+    </svg>`;
+  }
+  const H = 200;
+  const pct = (e) => (yAt(e, H) / H) * 100;
+
+  function transectFigure() {
+    const labels = REGIONS.map((r) => `<div class="t-lab" style="left:${r.x * 100}%; bottom:calc(${100 - pct(elev(r.x))}% - 1px)"><strong>${r.name}</strong><span>${r.where}</span><i class="pin"></i></div>`).join('');
+    return `<figure class="t-profile" style="margin-inline:0">
+      ${profileSVG(H)}
+      <div class="t-reveal"></div>
+      ${labels}
+      <span class="t-feature" style="left:17.5%; top:${pct(0) + 2}%">Salish Sea</span>
+      <span class="t-feature" style="left:46%; top:2%">Coast Mountains</span>
+      <figcaption class="visually-hidden">An elevation profile of southern BC from Victoria in the west, across the Salish Sea and the Coast Mountains, to Kamloops in the interior.</figcaption>
+    </figure>`;
+  }
+
+  // ---------- Direction 1: Transect ----------
+  function tHeader(page) {
+    return `<header class="t-head" data-landmark="header">
+      <div class="t-bar">
+        <a href="#" class="t-mark" data-go="home">${NAME}</a>
+        <nav class="t-nav" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+        ${themeBtn()}
+      </div>
+      <div class="t-mini" id="t-mini">${profileSVG(22)}<div class="t-mover"><i class="t-dot"></i></div></div>
+    </header>`;
+  }
+  function tFooter() {
+    return `<footer class="t-foot" data-landmark="footer">
+      <div class="t-foot-prof">${profileSVG(56)}</div>
+      <div class="t-foot-in">
+        <div><h2>Contact</h2><p>${EMAIL}</p></div>
+        <div><h2>Regions</h2><p>${REGIONS.map((r) => r.name).join(' · ')}</p></div>
+        <div><h2>This site</h2><p><a href="#" data-go="privacy">Privacy</a> · <span class="ph-chip">Placeholder brand</span></p></div>
+      </div>
+    </footer>`;
+  }
+  function renderTransect(page) {
+    let main;
+    if (page === 'home') {
+      const west = [...REGIONS].sort((a, b) => a.x - b.x);
+      main = `
+        <div class="t-hero">
+          <p class="eyebrow">Technology education · British Columbia</p>
+          <h1 tabindex="-1">${tk('one-sentence statement of who we are, pending the mission')}</h1>
+        </div>
+        ${transectFigure()}
+        <div class="t-caption"><span>West</span><span>Our three regions, island to interior</span><span>East</span></div>
+        <section class="t-sec" aria-labelledby="t-pillars">
+          <h2 id="t-pillars">Four pillars</h2>
+          <ol class="t-stations">${PILLARS.map((p, i) => `<li><span class="num">Pillar ${i + 1}</span><p>${p}</p><a href="#" data-go="about">More on About</a></li>`).join('')}</ol>
+        </section>
+        <section class="t-vv" aria-labelledby="t-vv">
+          <div class="t-sec">
+            <div>
+              <h2 id="t-vv">Valleyview Social Innovation Grant</h2>
+              <p>Funding plus mentorship for a graduating high school student with an idea. ${tk('award amount')}</p>
+              <p class="t-url">Find it at /valleyview</p>
+              <a class="btn" href="#" data-go="valleyview">About the grant <span aria-hidden="true">→</span></a>
+            </div>
+            ${slot('4:3', 'A student explaining their project to a mentor, at a table, hands visible')}
+          </div>
+        </section>
+        <section class="t-sec" aria-labelledby="t-where">
+          <h2 id="t-where">Where we work</h2>
+          <ul class="t-regions">${west.map((r) => `<li><strong>${r.name}</strong><span class="sub">${r.where}</span><span class="t-pos" aria-hidden="true"><i style="left:${r.x * 100}%"></i></span></li>`).join('')}</ul>
+        </section>
+        <section class="t-sec t-cta" aria-labelledby="t-cta">
+          <h2 id="t-cta">Planning Pro-D, a school visit or a partnership?</h2>
+          <a class="btn" href="#" data-go="contact">Contact us <span aria-hidden="true">→</span></a>
+        </section>`;
+    } else {
+      const p = PAGES[page];
+      main = `<div class="t-page">
+        <p class="eyebrow">${p.crumb || 'Page'}</p>
+        <h1 tabindex="-1">${p.title}</h1>
+        <p class="lede">${p.lede}</p>
+        <div class="t-profile">${profileSVG(70)}</div>
+        <div class="prose">${p.sections.map((s) => `<section><h2>${s.h}</h2>${s.html}${s.note ? `<p class="t-note">${s.note}</p>` : ''}</section>`).join('')}${p.note ? `<p class="t-note">${p.note}</p>` : ''}</div>
+      </div>`;
+    }
+    return `<div class="site d-transect">${skip}${tHeader(page)}<main id="mock-main" tabindex="-1" data-landmark="main">${main}</main>${tFooter()}</div>`;
+  }
+
+  // ---------- Direction 2: Field Notes ----------
+  const row = (body, note) => `<div class="f-row"><div class="f-main">${body}</div>${note ? `<aside class="f-note" aria-label="Margin note">${note}</aside>` : '<div></div>'}</div>`;
+  function renderField(page) {
+    let main;
+    if (page === 'home') {
+      main = `
+        ${row(`<p class="f-meta"><span>Last reviewed ${tk('date')}</span><span>Sources listed in the margin</span></p><h1 tabindex="-1">${tk('one-sentence statement of who we are, pending the mission')}</h1>`, '<b>Margin notes</b> say where a statement comes from, who decided it, and when.')}
+        ${row(`<figure>${slot('3:2', 'Teachers in a workshop, mid-discussion, Kamloops, natural light')}<figcaption>Plate 1. Art direction note shown until original photography exists.</figcaption></figure>`, '<b>Photos:</b> original only. No stock imagery.')}
+        ${row(`<h2><span class="sec">§1</span>What we stand for</h2><ol class="f-pillars">${PILLARS.map((p) => `<li>${p}</li>`).join('')}</ol><p><a class="f-link" href="#" data-go="about">Read more on About →</a></p>`, '<b>Source:</b> adopted by board vote, 15 October 2026.')}
+        ${row(`<h2><span class="sec">§2</span>Valleyview Social Innovation Grant</h2><p>Funding plus mentorship for a graduating high school student with an idea. ${tk('award amount')}</p><p><a class="f-link" href="#" data-go="valleyview">About the grant →</a></p>`, '<b>Short URL:</b> /valleyview<br><b>Pending D5:</b> how applications are collected.')}
+        ${row(`<h2><span class="sec">§3</span>Where we work</h2><div class="f-table-wrap"><table class="f-table"><thead><tr><th scope="col">Region</th><th scope="col">Latitude</th><th scope="col">Longitude</th></tr></thead><tbody>${REGIONS.map((r) => `<tr><td>${r.name}</td><td>${r.lat}</td><td>${r.lon}</td></tr>`).join('')}</tbody></table></div>`, '<b>Order:</b> listed by priority, not by size or geography.')}
+        ${row(`<h2><span class="sec">§4</span>Get in touch</h2><p>For Pro-D and workshops, school visits, partnerships or media, email us. There is no form on this site.</p><p><a class="f-link" href="#" data-go="contact">Contact us →</a></p>`)}
+      `;
+    } else {
+      const p = PAGES[page];
+      main = `
+        ${row(`<p class="f-meta"><span>Last reviewed ${tk('date')}</span><span>${p.crumb || 'Page'}</span></p><h1 tabindex="-1">${p.title}</h1><p>${p.lede}</p>`, p.note || '')}
+        ${p.sections.map((s, i) => row(`<h2><span class="sec">§${i + 1}</span>${s.h}</h2>${s.html}`, s.note || '')).join('')}
+      `;
+    }
+    return `<div class="site d-field">${skip}
+      <header class="f-head" data-landmark="header">
+        <a href="#" class="f-mark" data-go="home">${NAME}</a>
+        <nav class="f-nav" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+        ${themeBtn()}
+      </header>
+      <main id="mock-main" tabindex="-1" class="f-wrap" data-landmark="main">${main}</main>
+      <footer class="f-foot" data-landmark="footer">
+        <div>
+          <h2>Page receipt</h2>
+          <dl class="receipt" id="receipt"><div><dt>Measuring…</dt><dd></dd></div></dl>
+        </div>
+        <div>
+          <h2>Contact</h2><p>${EMAIL}</p>
+          <h2 style="margin-top:1rem">Regions</h2><p>${REGIONS.map((r) => r.name).join(', ')}</p>
+          <p style="margin-top:1rem"><a href="#" data-go="privacy">Privacy</a> · <span class="ph-chip">Placeholder brand</span></p>
+        </div>
+      </footer>
+    </div>`;
+  }
+  function fillReceipt() {
+    const el = document.getElementById('receipt');
+    if (!el) return;
+    let bytes = 0, third = new Set();
+    try {
+      const nav = performance.getEntriesByType('navigation')[0];
+      if (nav) bytes += nav.transferSize || nav.encodedBodySize || 0;
+      for (const r of performance.getEntriesByType('resource')) {
+        bytes += r.transferSize || r.encodedBodySize || 0;
+        try { const u = new URL(r.name); if (u.origin !== location.origin) third.add(u.hostname); } catch (e) {}
+      }
+    } catch (e) {}
+    let cookies = 0;
+    try { cookies = document.cookie ? document.cookie.split(';').filter(Boolean).length : 0; } catch (e) {}
+    const kb = bytes ? `${Math.round(bytes / 1024)} KB` : 'not reported';
+    el.innerHTML = `
+      <div><dt>Transferred</dt><dd>${kb}</dd></div>
+      <div><dt>Cookies set</dt><dd>${cookies}</dd></div>
+      <div><dt>Tracking identifiers</dt><dd>0</dd></div>
+      <div><dt>Third-party requests</dt><dd>${third.size}</dd></div>
+      <div><dt>Saved in your browser</dt><dd>Theme choice</dd></div>
+      <p class="rnote">Measured live in this prototype${third.size ? `. Third parties: ${[...third].join(', ')}. The prototype loads fonts from Google; the real site self-hosts them, so this would read 0` : ''}. The prototype also keeps your study notes in this browser.</p>`;
+  }
+
+  // ---------- Direction 3: Trailhead ----------
+  const GLYPHS = [
+    '<circle cx="22" cy="22" r="16"/>',
+    '<path d="M22 5 L39 37 H5 Z"/>',
+    '<rect x="7" y="7" width="30" height="30"/>',
+    '<path d="M22 3 L41 22 L22 41 L3 22 Z"/>',
+  ];
+  const glyph = (i) => `<svg class="glyph" viewBox="0 0 44 44" aria-hidden="true" focusable="false">${GLYPHS[i]}</svg>`;
+  const ROUTES = [
+    { who: 'I teach or work in a BC school', to: 'about', dest: 'About us, then Contact' },
+    { who: "I'm a graduating high school student", to: 'valleyview', dest: 'The Valleyview Grant' },
+    { who: 'I fund, partner with or report on education', to: 'funding', dest: 'Funding, then the Board' },
+    { who: 'I want to know what you stand for', to: 'about', dest: 'Our pillars and values' },
+  ];
+  const routeRow = (r) => `<li><a href="#" data-go="${r.to}"><span class="who">${r.who}</span><span class="dest">${r.dest}</span><span class="arrow" aria-hidden="true">→</span></a></li>`;
+  function renderTrail(page) {
+    let main;
+    if (page === 'home') {
+      const west = { Victoria: 'west', Vancouver: 'west', Kamloops: 'east' };
+      main = `
+        <div class="r-hero">
+          <p class="lede">${tk('one-sentence statement of who we are, pending the mission')}</p>
+          <h1 tabindex="-1">Where are you headed?</h1>
+          <ul class="r-routes">${ROUTES.map(routeRow).join('')}</ul>
+        </div>
+        <section class="r-sec" aria-labelledby="r-pillars">
+          <h2 id="r-pillars">Four pillars</h2>
+          <ul class="r-pillars">${PILLARS.map((p, i) => `<li>${glyph(i)}<div><p>${p}</p><a href="#" data-go="about">More on About</a></div></li>`).join('')}</ul>
+        </section>
+        <section class="r-poster" aria-labelledby="r-vv">
+          <div class="r-sec">
+            <div>
+              <p class="for">For graduating high school students</p>
+              <h2 id="r-vv" class="url">/valleyview</h2>
+              <p>The Valleyview Social Innovation Grant: funding plus mentorship to build your idea. ${tk('award amount')}</p>
+              <a class="btn" href="#" data-go="valleyview">About the grant <span aria-hidden="true">→</span></a>
+            </div>
+            ${slot('4:5', 'Poster crop: a student at their own workbench or desk, looking at their project, not the camera')}
+          </div>
+        </section>
+        <section class="r-sec" aria-labelledby="r-where">
+          <h2 id="r-where">Where we work</h2>
+          <div class="r-post">
+            <span class="pole" aria-hidden="true"></span>
+            ${REGIONS.map((r, i) => `<span class="blade ${west[r.name]}" style="grid-row:${i + 1}">${r.name}<small>${r.where}</small></span>`).join('')}
+          </div>
+          <p class="r-post-cap">Listed in priority order. Blades point west or east.</p>
+        </section>
+        <section class="r-sec r-contact" aria-labelledby="r-cta">
+          <h2 id="r-cta">Planning Pro-D, a school visit or a partnership?</h2>
+          <a class="btn" href="#" data-go="contact">Contact us <span aria-hidden="true">→</span></a>
+        </section>`;
+    } else {
+      const p = PAGES[page];
+      main = `
+        <div class="r-page">
+          <ol class="r-crumbs" aria-label="Breadcrumb"><li><a href="#" data-go="home">Trailhead</a></li>${p.crumb ? `<li>${p.crumb}</li>` : ''}<li aria-current="page">${p.title}</li></ol>
+          <h1 tabindex="-1">${p.title}</h1>
+          <p class="lede">${p.lede}</p>
+        </div>
+        <div class="r-body"><div class="prose">
+          ${p.sections.map((s) => `<section><h2>${s.h}</h2>${s.html}${s.note ? `<p class="r-note">${s.note}</p>` : ''}</section>`).join('')}
+          ${p.note ? `<p class="r-note">${p.note}</p>` : ''}
+          <nav class="r-next" aria-label="Next stops"><h2>Next stops</h2><ul class="r-routes">${p.next.map((id) => routeRow({ who: titleOf(id), to: id, dest: id === 'home' ? 'Back to the trailhead' : 'Continue on this route' })).join('')}</ul></nav>
+        </div></div>`;
+    }
+    return `<div class="site d-trail">${skip}
+      <header class="r-head" data-landmark="header"><div class="r-head-in">
+        <a href="#" class="r-mark" data-go="home">${NAME}</a>
+        <nav class="r-nav" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+        ${themeBtn()}
+      </div></header>
+      <main id="mock-main" tabindex="-1" data-landmark="main">${main}</main>
+      <footer class="r-foot" data-landmark="footer"><div class="r-foot-in">
+        <div><h2>Contact</h2><p>${EMAIL}</p></div>
+        <div><h2>Regions</h2><p>${REGIONS.map((r) => r.name).join(' · ')}</p></div>
+        <div><h2>This site</h2><p><a href="#" data-go="privacy">Privacy</a> · <span class="ph-chip">Placeholder brand</span></p></div>
+      </div></footer>
+    </div>`;
+  }
+
+  // ---------- Study sheets ----------
+  const STUDIES = {
+    transect: {
+      name: 'Transect',
+      sum: 'The site is laid out along a line across southern BC, from Victoria to Kamloops.',
+      facts: [
+        ['The idea', 'An elevation profile from the island to the interior runs through the header, the home page and the footer. A small marker in the header moves along it as you scroll, so the page itself feels like a journey across the province. The pillars sit on the line like stations.'],
+        ['Why it could be ours', "It uses BC's real geography as structure, not decoration, which is what SPEC 8.2 asks for. It gives the brand work a strong motif and a natural home for motion, and nobody else's site looks like this."],
+        ['Without JavaScript', 'The profile is generated at build time as inline SVG, so it costs no JavaScript. Only the moving marker needs a few lines of script. Without it, the marker sits at the start.'],
+        ['Cost to build', 'Medium. A build-time SVG generator using real elevation data, one small script, and a performance budget for Home (issue #16).'],
+        ['Risks', 'Geographic order (Victoria, Vancouver, Kamloops) differs from the priority order in the spec, where Kamloops comes first. The motif could feel repetitive if every page leans on it. Labels on the profile need contrast checks in both themes.'],
+      ],
+      keep: ['Elevation profile in the header', 'Scroll marker moving along the profile', 'Pillars as stations on a line', 'Regions in west-to-east order', 'Profile reprised in the footer'],
+    },
+    'field-notes': {
+      name: 'Field Notes',
+      sum: "The site reads like a researcher's notebook that shows its sources and its workings.",
+      facts: [
+        ['The idea', 'Every page has a margin for sources, decisions and dates, so a visitor can see who decided something and when. Every page ends with a page receipt: what it cost to load, and proof that it set no cookies and made no tracking requests.'],
+        ['Why it could be ours', 'It turns transparency and privacy (rules 1 to 3, and purpose 4 of the spec) into something visitors can see. It is mostly typography, so it ages well and makes the site feel trustworthy to teachers and funders.'],
+        ['Without JavaScript', 'Fully static. Page weight can be measured at build time; the live receipt is an optional extra.'],
+        ['Cost to build', 'Low to medium. Margin notes need a content convention, such as a Note component in MDX, and writers need to keep them current.'],
+        ['Risks', 'Could feel academic or too quiet for students. Gives less room to the "alive and active" feel unless the brand brings strong motion. Out-of-date notes would undercut the whole point.'],
+      ],
+      keep: ['Margin notes with sources and decisions', 'Page receipt in the footer', '"Last reviewed" line on every page', 'Regions with coordinates', 'Serif reading type and quiet header'],
+    },
+    trailhead: {
+      name: 'Trailhead',
+      sum: 'The home page is a trailhead sign: choose your route by who you are.',
+      facts: [
+        ['The idea', 'Home opens with routes for each audience in SPEC section 3, so a student is one click from Valleyview and a teacher is one click from About. Every inner page ends with "next stops" for that route. Pillars get wayfinding shapes and regions sit on sign blades.'],
+        ['Why it could be ours', 'It is built around the audiences, not the org chart. The signage language borrows from BC trails and parks without copying anyone, and it gives the Valleyview short URL a poster-sized home.'],
+        ['Without JavaScript', 'Fully static. Routes and next stops are plain links.'],
+        ['Cost to build', 'Low. Needs a small "next stops" list per page in the content data.'],
+        ['Risks', 'Audience routes can oversimplify; a teacher may also be a parent or a funder. Signage could tip into theme-park if the brand pushes it too far. Uppercase hurts readability, so keep it to short labels.'],
+      ],
+      keep: ['Audience routes on Home', '"Next stops" at the end of each page', 'Shape glyphs for the pillars', 'Sign-blade regions', 'Inverted header and footer bands', 'Poster-sized Valleyview block'],
+    },
+  };
+
+  // ---------- Notes (kept in this browser only) ----------
+  const NOTES_KEY = 'layout-studies-notes';
+  let notes = {};
+  try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') || {}; } catch (e) { notes = {}; }
+  const saveNotes = () => { try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch (e) {} };
+
+  function renderSheet() {
+    const s = STUDIES[dir];
+    const n = notes[dir] || { keep: [], text: '' };
+    sheet.innerHTML = `
+      <div>
+        <span class="kicker">Direction ${Object.keys(STUDIES).indexOf(dir) + 1} of 3</span>
+        <h2>${s.name}</h2>
+        <p class="sum">${s.sum}</p>
+        <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+      </div>
+      <div class="keep">
+        <fieldset>
+          <legend>Parts worth keeping</legend>
+          ${s.keep.map((k, i) => `<label><input type="checkbox" id="keep-${dir}-${i}" data-keep="${i}"${n.keep.includes(i) ? ' checked' : ''}> ${k}</label>`).join('')}
+        </fieldset>
+        <div>
+          <label class="lbl" for="notes-${dir}">Your notes on ${s.name}</label>
+          <textarea id="notes-${dir}" data-notes placeholder="What works, what doesn't, what you'd change">${(n.text || '').replace(/</g, '&lt;')}</textarea>
+        </div>
+        <p class="mix">The directions mix. For example: Field Notes pages, the Transect profile as the brand motif, and Trailhead routes on Home.</p>
+        <div class="copy-row">
+          <button type="button" class="lab-btn" id="copy-notes">Copy notes from all three</button>
+          <span class="copy-status" id="copy-status" role="status"></span>
+        </div>
+        <textarea class="copy-out" id="copy-out" readonly hidden aria-label="Your notes, ready to copy"></textarea>
+      </div>`;
+  }
+  function notesText() {
+    const lines = ['Layout studies feedback', ''];
+    for (const [id, s] of Object.entries(STUDIES)) {
+      const n = notes[id] || { keep: [], text: '' };
+      lines.push(`${s.name}`);
+      lines.push(`  Keep: ${n.keep.length ? n.keep.map((i) => s.keep[i]).join('; ') : '(none ticked)'}`);
+      lines.push(`  Notes: ${n.text ? n.text.trim().replace(/\n/g, ' / ') : '(none)'}`);
+      lines.push('');
+    }
+    return lines.join('\n');
+  }
+
+  // ---------- State and wiring ----------
+  const frame = document.getElementById('frame');
+  const sheet = document.getElementById('sheet');
+  const DIRS = ['transect', 'field-notes', 'trailhead'];
+  const RENDER = { transect: renderTransect, 'field-notes': renderField, trailhead: renderTrail };
+  const THEME_KEY = 'layout-studies-theme';
+  const THEME_LABEL = { system: 'System', light: 'Light', dark: 'Dark' };
+  let theme = 'system';
+  try { theme = localStorage.getItem(THEME_KEY) || 'system'; } catch (e) {}
+  if (!THEME_LABEL[theme]) theme = 'system';
+  let dir = DIRS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'transect';
+  let page = 'home';
+
+  const applyTheme = () => {
+    if (theme === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', theme);
+  };
+
+  function render(focus) {
+    frame.innerHTML = RENDER[dir](page);
+    frame.scrollTop = 0;
+    document.getElementById('frame-label').textContent = `${STUDIES[dir].name} · ${titleOf(page)}`;
+    if (dir === 'field-notes') fillReceipt();
+    updateMarker();
+    if (focus) { const h = frame.querySelector('h1'); if (h) h.focus({ preventScroll: true }); }
+  }
+  function setDir(d) {
+    dir = d;
+    document.getElementById(`dir-${d}`).checked = true;
+    render(false);
+    renderSheet();
+  }
+
+  function updateMarker() {
+    const mini = frame.querySelector('#t-mini');
+    if (!mini) return;
+    const max = frame.scrollHeight - frame.clientHeight;
+    const p = Math.min(0.985, Math.max(0.015, max > 0 ? frame.scrollTop / max : 0));
+    mini.style.setProperty('--p', p.toFixed(4));
+    mini.style.setProperty('--y', `${yAt(elev(p), 22).toFixed(1)}px`);
+  }
+  let ticking = false;
+  frame.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { updateMarker(); ticking = false; });
+  });
+
+  frame.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]');
+    if (go) { e.preventDefault(); page = go.dataset.go; render(true); return; }
+    if (e.target.closest('[data-skip]')) { e.preventDefault(); const m = frame.querySelector('#mock-main'); if (m) m.focus(); return; }
+    if (e.target.closest('[data-theme-toggle]')) {
+      theme = { system: 'light', light: 'dark', dark: 'system' }[theme];
+      try { localStorage.setItem(THEME_KEY, theme); } catch (err) {}
+      applyTheme();
+      frame.querySelectorAll('[data-theme-toggle]').forEach((b) => { b.textContent = `Theme: ${THEME_LABEL[theme]}`; });
+    }
+  });
+
+  document.getElementById('dir-seg').addEventListener('change', (e) => {
+    page = 'home';
+    location.hash = e.target.value;
+  });
+  window.addEventListener('hashchange', () => {
+    const d = location.hash.slice(1);
+    if (DIRS.includes(d) && d !== dir) { page = 'home'; setDir(d); }
+  });
+  document.getElementById('width-seg').addEventListener('change', (e) => {
+    frame.style.setProperty('--w', e.target.value);
+    document.getElementById('frame-width').textContent = e.target.value === '100%' ? 'Full width' : `${e.target.value.replace('px', ' px')} wide`;
+    setTimeout(updateMarker, 300);
+  });
+  document.getElementById('opt-rm').addEventListener('change', (e) => { frame.classList.toggle('rm', e.target.checked); if (e.target.checked) render(false); });
+  document.getElementById('opt-lm').addEventListener('change', (e) => frame.classList.toggle('show-landmarks', e.target.checked));
+
+  sheet.addEventListener('change', (e) => {
+    const k = e.target.closest('[data-keep]');
+    if (!k) return;
+    const n = (notes[dir] = notes[dir] || { keep: [], text: '' });
+    const i = Number(k.dataset.keep);
+    n.keep = k.checked ? [...new Set([...n.keep, i])].sort() : n.keep.filter((x) => x !== i);
+    saveNotes();
+  });
+  sheet.addEventListener('input', (e) => {
+    if (!e.target.matches('[data-notes]')) return;
+    (notes[dir] = notes[dir] || { keep: [], text: '' }).text = e.target.value;
+    saveNotes();
+  });
+  sheet.addEventListener('click', (e) => {
+    if (!e.target.closest('#copy-notes')) return;
+    const text = notesText();
+    const status = document.getElementById('copy-status');
+    const out = document.getElementById('copy-out');
+    const fallback = () => { out.hidden = false; out.value = text; out.focus(); out.select(); status.textContent = 'Copying is blocked here. The notes are selected below; copy them yourself.'; };
+    try {
+      navigator.clipboard.writeText(text).then(() => { status.textContent = 'Copied. Paste them into the chat.'; }, fallback);
+    } catch (err) { fallback(); }
+  });
+
+  applyTheme();
+  setDir(dir);
+})();
+</script>
