@@ -1,0 +1,16 @@
+/*
+ * Self-hosted fonts (rule 3). Placeholder: Noto Sans, variable weight 400 to 700.
+ *
+ * Built from the full upstream font, not the Google Fonts subsets, because
+ * those drop combining marks such as U+0313 and U+0331 used in Indigenous
+ * orthographies (SPEC section 6). Covers Latin, Latin Extended A, B and
+ * Additional, IPA, spacing modifiers, all combining diacritics and Greek.
+ * Licence: fonts/OFL.txt.
+ */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('./fonts/noto-sans-wght.woff2') format('woff2');
+}
