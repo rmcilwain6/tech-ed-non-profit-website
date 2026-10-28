@@ -13,13 +13,22 @@ Built with [Astro](https://astro.build), deployed as static files to Cloudflare.
 
 ## Local development
 
-Requires Node.js (current LTS).
+Requires Node.js 24.16 or later on the 24 line (current LTS, pinned in `.nvmrc`).
 
 ```sh
 npm install
 npm run dev       # local dev server
 npm run build     # production build to dist/
 npm run preview   # serve the build locally
+```
+
+Before opening a pull request, run the same checks as CI:
+
+```sh
+npm run check         # type check (astro check)
+npm run lint          # ESLint, including accessibility rules
+npm run format:check  # Prettier (npm run format to fix)
+npm run build
 ```
 
 ## Licence

@@ -37,12 +37,12 @@ The site is built **before** the name and brand are final. Brand application mus
 
 ## 3. Audiences
 
-| Priority | Audience | What they need |
-| --- | --- | --- |
-| 1 | Teachers and school/district staff (BC) | Who we are, what we do, why to trust us, how to reach us |
-| 2 | Graduating high school students | Valleyview grant details and how to apply |
-| 3 | Funders, partners, media | Mission, board, funding values, contact |
-| 4 | Parents and the public | Plain-language writing and resources (later phases) |
+| Priority | Audience                                | What they need                                           |
+| -------- | --------------------------------------- | -------------------------------------------------------- |
+| 1        | Teachers and school/district staff (BC) | Who we are, what we do, why to trust us, how to reach us |
+| 2        | Graduating high school students         | Valleyview grant details and how to apply                |
+| 3        | Funders, partners, media                | Mission, board, funding values, contact                  |
+| 4        | Parents and the public                  | Plain-language writing and resources (later phases)      |
 
 ## 4. Non-negotiable rules
 
@@ -209,17 +209,17 @@ Helpful, on-brand, links to Home and Contact.
 
 ### 7.9 Phase 3 pages
 
-| Page | Path | Notes |
-| --- | --- | --- |
-| Blog / News | `/writing` | Posts with author, date, tags; RSS feed. Authors may include anyone on the team (section 12.7) |
-| Teacher Resources | `/resources` | Curated, filterable by type, grade band, topic |
-| Tool Guide | `/tools` | Critical reviews against fixed questions; vendor naming policy D15 |
-| Events | `/events` | Data-driven; .ics file per event |
-| Get Involved | `/get-involved` | Outbound links only |
-| FAQ | `/faq` | |
-| Corrections | `/corrections` | Public log of what we got wrong and what changed |
-| AI Use | `/ai` | Once the organization's statement exists |
-| Truth and Reconciliation | TBD | Our perspective on the TRC Calls to Action and how we are working toward them. Only if the board approves (D13, R6). Replaces a footer land acknowledgement |
+| Page                     | Path            | Notes                                                                                                                                                       |
+| ------------------------ | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blog / News              | `/writing`      | Posts with author, date, tags; RSS feed. Authors may include anyone on the team (section 12.7)                                                              |
+| Teacher Resources        | `/resources`    | Curated, filterable by type, grade band, topic                                                                                                              |
+| Tool Guide               | `/tools`        | Critical reviews against fixed questions; vendor naming policy D15                                                                                          |
+| Events                   | `/events`       | Data-driven; .ics file per event                                                                                                                            |
+| Get Involved             | `/get-involved` | Outbound links only                                                                                                                                         |
+| FAQ                      | `/faq`          |                                                                                                                                                             |
+| Corrections              | `/corrections`  | Public log of what we got wrong and what changed                                                                                                            |
+| AI Use                   | `/ai`           | Once the organization's statement exists                                                                                                                    |
+| Truth and Reconciliation | TBD             | Our perspective on the TRC Calls to Action and how we are working toward them. Only if the board approves (D13, R6). Replaces a footer land acknowledgement |
 
 ## 8. Technical requirements
 
@@ -235,18 +235,18 @@ App-like features go, in order of preference:
 
 The stack must continue to meet these requirements:
 
-| # | Requirement |
-| --- | --- |
-| T1 | Free hosting tier whose terms allow use by an organization (Vercel's Hobby tier does not: personal, non-commercial only) |
-| T2 | Pages prerendered as static files by default. Server code only by recorded decision |
-| T3 | TypeScript, strict mode |
-| T4 | Content as Markdown/MDX files plus typed data modules, validated at build |
-| T5 | Path to a CMS that non-technical writers can use without GitHub accounts (R3) |
-| T6 | Rich motion and interactive components (e.g. a BC map) loaded only where used, without bloating text-only pages |
-| T7 | Light and dark themes without a flash of the wrong theme on load |
-| T8 | Routing structure ready for additional languages without a rewrite |
-| T9 | Anonymous page view counting (a stretch goal for launch); named events later (section 10, D7) |
-| T10 | Mainstream enough that AI agents and future volunteers can work in it, and credible as a modern stack |
+| #   | Requirement                                                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------ |
+| T1  | Free hosting tier whose terms allow use by an organization (Vercel's Hobby tier does not: personal, non-commercial only) |
+| T2  | Pages prerendered as static files by default. Server code only by recorded decision                                      |
+| T3  | TypeScript, strict mode                                                                                                  |
+| T4  | Content as Markdown/MDX files plus typed data modules, validated at build                                                |
+| T5  | Path to a CMS that non-technical writers can use without GitHub accounts (R3)                                            |
+| T6  | Rich motion and interactive components (e.g. a BC map) loaded only where used, without bloating text-only pages          |
+| T7  | Light and dark themes without a flash of the wrong theme on load                                                         |
+| T8  | Routing structure ready for additional languages without a rewrite                                                       |
+| T9  | Anonymous page view counting (a stretch goal for launch); named events later (section 10, D7)                            |
+| T10 | Mainstream enough that AI agents and future volunteers can work in it, and credible as a modern stack                    |
 
 Candidates considered: Next.js (static export), Astro, SvelteKit. Next.js remains the fallback if the site shifts toward being an application.
 
@@ -378,14 +378,14 @@ Agents may draft, but a human must approve: the brand layer, privacy text, fundi
 
 Write these once the patterns they describe have settled in real code. `add-page` may come earlier if several pages are built the same way.
 
-| Skill | Purpose |
-| --- | --- |
-| `add-page` | New route, content file, metadata, navigation entry, end-to-end test, from the page template |
-| `add-post` | Converts a submitted draft into a blog post with valid metadata (Phase 3) |
-| `review-pr` | Checks a pull request against this spec, section 4 and section 9 |
-| `brand-swap` | Applies a brand package to the brand layer only, then runs visual checks |
+| Skill           | Purpose                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `add-page`      | New route, content file, metadata, navigation entry, end-to-end test, from the page template                                                |
+| `add-post`      | Converts a submitted draft into a blog post with valid metadata (Phase 3)                                                                   |
+| `review-pr`     | Checks a pull request against this spec, section 4 and section 9                                                                            |
+| `brand-swap`    | Applies a brand package to the brand layer only, then runs visual checks                                                                    |
 | `research-task` | Runs an R-task and writes findings in a fixed format: question, options, criteria, evidence with sources, recommendation (location per D22) |
-| `grill-me` | Interviews a human to turn a vague request into an issue with acceptance criteria |
+| `grill-me`      | Interviews a human to turn a vague request into an issue with acceptance criteria                                                           |
 
 ### 12.7 Blog publishing workflow (Phase 3)
 
@@ -406,43 +406,43 @@ Write these once the patterns they describe have settled in real code. `add-page
 
 ## 14. Decisions
 
-| ID | Decision | Status | Resolution or default |
-| --- | --- | --- | --- |
-| D1 | Stack and hosting | Decided | Astro on Cloudflare Workers (static assets), free tier. Oct 20, 2026. Record 0001 |
-| D2 | Domain | Open (board) | `.ca`, after the name is chosen |
-| D3 | GitHub home | Decided | Reed's personal account, transferable later |
-| D4 | Home call to action | Decided | Contact us |
-| D5 | Where Valleyview applications are collected | Open (board) | Decided outside the website, in board discussions; R4 informs it. Likely an outbound link to a Canadian-hosted form tool. Not an MVP blocker |
-| D6 | Repo visibility | Decided | Public |
-| D7 | Analytics | Decided for MVP | Anonymous page views only, no cookies, as a stretch goal for launch. Named events deferred; tool via R2 |
-| D8 | Content editing and CMS | Decided for now | Drafts submitted, published via pull request. CMS later via R3 |
-| D9 | Languages | Decided | English only. i18n-ready routing. French and Indigenous languages are stretch goals (R7) |
-| D10 | Dark mode | Decided | At launch, system default plus toggle |
-| D11 | Funding disclosure | Open (board) | Values only on the page until decided; may live in formal reports instead |
-| D12 | Donations | Decided | Out of scope |
-| D13 | Land acknowledgement / Truth and Reconciliation page | Open (board) | No footer acknowledgement by default. R6 informs the board |
-| D14 | Regional leads shown publicly | Open (board) | Not shown |
-| D15 | Tool Guide names specific products | Open (board) | Phase 3 |
-| D16 | Launch date | Decided (target) | Mid-November 2026, together with name, brand and domain (D20). Moves if the brand is not ready. Revised Oct 21, 2026 (record 0002) |
-| D17 | Licence | Decided | MIT for code, CC BY 4.0 for written content |
-| D18 | Human review on every pull request | Decided | Yes, including content-only changes |
-| D19 | Past Valleyview recipients featured | Decided for Phase 1 | No. Revisit with consent later |
-| D20 | Valleyview page before the name exists | Decided | No public interim launch. The site, name, brand and domain go public together. Valleyview launches as an information page; the application link follows D5. Revised Oct 21, 2026 (record 0002) |
-| D21 | Organization email | Open (blocked) | Created with the domain in Phase 2 |
-| D22 | Where research findings live | Decided for now | Google Drive. Technical findings may move to `docs/research/` |
-| D23 | Pre-launch visibility | Decided | Production and preview deploys behind Cloudflare Access until launch; only allowlisted team members can see them. Oct 21, 2026 |
-| D24 | MVP scope | Decided | Phases 0 to 2 with the section 4 rules; heavy automation, skills and analytics events after launch. Oct 21, 2026 (record 0002) |
+| ID  | Decision                                             | Status              | Resolution or default                                                                                                                                                                          |
+| --- | ---------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Stack and hosting                                    | Decided             | Astro on Cloudflare Workers (static assets), free tier. Oct 20, 2026. Record 0001                                                                                                              |
+| D2  | Domain                                               | Open (board)        | `.ca`, after the name is chosen                                                                                                                                                                |
+| D3  | GitHub home                                          | Decided             | Reed's personal account, transferable later                                                                                                                                                    |
+| D4  | Home call to action                                  | Decided             | Contact us                                                                                                                                                                                     |
+| D5  | Where Valleyview applications are collected          | Open (board)        | Decided outside the website, in board discussions; R4 informs it. Likely an outbound link to a Canadian-hosted form tool. Not an MVP blocker                                                   |
+| D6  | Repo visibility                                      | Decided             | Public                                                                                                                                                                                         |
+| D7  | Analytics                                            | Decided for MVP     | Anonymous page views only, no cookies, as a stretch goal for launch. Named events deferred; tool via R2                                                                                        |
+| D8  | Content editing and CMS                              | Decided for now     | Drafts submitted, published via pull request. CMS later via R3                                                                                                                                 |
+| D9  | Languages                                            | Decided             | English only. i18n-ready routing. French and Indigenous languages are stretch goals (R7)                                                                                                       |
+| D10 | Dark mode                                            | Decided             | At launch, system default plus toggle                                                                                                                                                          |
+| D11 | Funding disclosure                                   | Open (board)        | Values only on the page until decided; may live in formal reports instead                                                                                                                      |
+| D12 | Donations                                            | Decided             | Out of scope                                                                                                                                                                                   |
+| D13 | Land acknowledgement / Truth and Reconciliation page | Open (board)        | No footer acknowledgement by default. R6 informs the board                                                                                                                                     |
+| D14 | Regional leads shown publicly                        | Open (board)        | Not shown                                                                                                                                                                                      |
+| D15 | Tool Guide names specific products                   | Open (board)        | Phase 3                                                                                                                                                                                        |
+| D16 | Launch date                                          | Decided (target)    | Mid-November 2026, together with name, brand and domain (D20). Moves if the brand is not ready. Revised Oct 21, 2026 (record 0002)                                                             |
+| D17 | Licence                                              | Decided             | MIT for code, CC BY 4.0 for written content                                                                                                                                                    |
+| D18 | Human review on every pull request                   | Decided             | Yes, including content-only changes                                                                                                                                                            |
+| D19 | Past Valleyview recipients featured                  | Decided for Phase 1 | No. Revisit with consent later                                                                                                                                                                 |
+| D20 | Valleyview page before the name exists               | Decided             | No public interim launch. The site, name, brand and domain go public together. Valleyview launches as an information page; the application link follows D5. Revised Oct 21, 2026 (record 0002) |
+| D21 | Organization email                                   | Open (blocked)      | Created with the domain in Phase 2                                                                                                                                                             |
+| D22 | Where research findings live                         | Decided for now     | Google Drive. Technical findings may move to `docs/research/`                                                                                                                                  |
+| D23 | Pre-launch visibility                                | Decided             | Production and preview deploys behind Cloudflare Access until launch; only allowlisted team members can see them. Oct 21, 2026                                                                 |
+| D24 | MVP scope                                            | Decided             | Phases 0 to 2 with the section 4 rules; heavy automation, skills and analytics events after launch. Oct 21, 2026 (record 0002)                                                                 |
 
 ## 15. Research tasks
 
 Each produces a findings document in Google Drive (D22) using the `research-task` format: question, options, criteria, evidence with sources, recommendation. Humans make the decision.
 
-| ID | Question | Blocks |
-| --- | --- | --- |
-| R1 | Which stack and host best meet T1 to T10? | Resolved by D1. The scaffold and first deploy act as the proof of concept; motion work comes with the brand |
-| R2 | Which tool counts anonymous page views (and later named events) with no cookies, at no cost? Include hosted options and a self-built counter on the host's free tier. Check rules 2 and 3: whether a vendor-hosted script counts as a third-party request, and what the tool does with IP addresses | Page views at launch (stretch goal, D7) |
-| R3 | Which CMS lets non-technical writers draft and submit posts without GitHub accounts, works with Astro, and costs nothing? | Phase 3 |
-| R4 | How should Valleyview applications be collected? Compare building our own (separate system, Canadian hosting) with Canadian form tools. Account for applicants who are minors, BC privacy law (PIPA), what schools expect, cost, and effort | Valleyview application link (post-MVP, D5). Owned by the board discussion |
-| R5 | Design inspiration: sites and identities that feel approachable, active and rooted in place, especially BC and Canadian examples, and how others use maps, geography and motion | Phase 2 |
-| R6 | Best practices for land acknowledgements and organizational responses to the TRC Calls to Action, especially Calls 62 to 65 on education. What makes them meaningful rather than performative, and who should be consulted | Board decision D13 |
-| R7 | What supporting French and Indigenous languages would take: technical needs, translation and community partnership, and examples of respectful practice | Stretch |
+| ID  | Question                                                                                                                                                                                                                                                                                            | Blocks                                                                                                      |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| R1  | Which stack and host best meet T1 to T10?                                                                                                                                                                                                                                                           | Resolved by D1. The scaffold and first deploy act as the proof of concept; motion work comes with the brand |
+| R2  | Which tool counts anonymous page views (and later named events) with no cookies, at no cost? Include hosted options and a self-built counter on the host's free tier. Check rules 2 and 3: whether a vendor-hosted script counts as a third-party request, and what the tool does with IP addresses | Page views at launch (stretch goal, D7)                                                                     |
+| R3  | Which CMS lets non-technical writers draft and submit posts without GitHub accounts, works with Astro, and costs nothing?                                                                                                                                                                           | Phase 3                                                                                                     |
+| R4  | How should Valleyview applications be collected? Compare building our own (separate system, Canadian hosting) with Canadian form tools. Account for applicants who are minors, BC privacy law (PIPA), what schools expect, cost, and effort                                                         | Valleyview application link (post-MVP, D5). Owned by the board discussion                                   |
+| R5  | Design inspiration: sites and identities that feel approachable, active and rooted in place, especially BC and Canadian examples, and how others use maps, geography and motion                                                                                                                     | Phase 2                                                                                                     |
+| R6  | Best practices for land acknowledgements and organizational responses to the TRC Calls to Action, especially Calls 62 to 65 on education. What makes them meaningful rather than performative, and who should be consulted                                                                          | Board decision D13                                                                                          |
+| R7  | What supporting French and Indigenous languages would take: technical needs, translation and community partnership, and examples of respectful practice                                                                                                                                             | Stretch                                                                                                     |
