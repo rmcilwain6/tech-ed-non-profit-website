@@ -340,6 +340,8 @@ The Privacy page names the tool. Optional, if cheap: publish the aggregate numbe
 /docs/CONTENT.md           # editing guide, voice and style (when needed)
 /.claude/skills/           # skills, also listed in AGENTS.md so any agent can read them (post-MVP)
 /content/                  # pages and typed data
+/data/map/                 # processed open map data, with sources and licences
+/tools/map/                # development-only scripts that rebuild the map data
 /src/                      # application code, brand layer
 /public/brand/             # logo, favicon, social image
 /tests/                    # end-to-end, unit, visual fixtures
