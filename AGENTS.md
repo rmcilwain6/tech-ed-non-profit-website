@@ -14,7 +14,7 @@ Public website for a BC technology education nonprofit whose name and brand are 
 
 ## MVP mode
 
-We are building toward a first launch (SPEC section 5, decision record 0002). The spec is a living guide: when it gets in the way of the work, say so and propose a change. The rules below hold in full. Heavy automation, skills and analytics events come after launch, so do not build anything the spec marks as post-MVP unless asked. The Valleyview page is information only for now; do not add an apply button or application handling.
+We are building toward a first launch (SPEC section 5, decision record 0002). The spec is a living guide: when it gets in the way of the work, say so and propose a change. The rules below hold in full. Heavy automation, skills and analytics events come after launch, so do not build anything the spec marks as post-MVP unless asked. The Valleyview page is information only until the board decides how applications are collected (D5); do not add an apply button or application handling before then.
 
 ## Rules you must not break
 
@@ -37,6 +37,7 @@ These are summarized from SPEC section 4. Breaking one requires a decision recor
 - Keep pull requests under about 400 changed lines, excluding content and lockfiles. Split larger work where it is sensible and say so in the PR.
 - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`).
 - Fill in the pull request template. Include screenshots when the UI changes.
+- When a change alters a decision, rule or fact, search the repo and open issues for every place that states it and update them in the same pull request. If you learn of a decision made outside the repo that contradicts what is written here, say so instead of building from either version.
 - Run the type check, lint, format check and build locally before opening a PR. Do not open a PR you know fails CI.
 - Architectural changes, server code, runtime dependencies that ship JavaScript to visitors, motion budget exceptions and exceptions to the rules above need a short decision record in `docs/decisions/` (copy `0000-template.md`). Development-only tools do not.
 - Pre-launch deploys sit behind Cloudflare Access. Never commit the allowlist or anyone's email address.

@@ -31,4 +31,4 @@ Analytics at launch is page views only (D7). Cloudflare Web Analytics is the def
 - `.astro` syntax is new to some contributors. Islands that need to share state need a small shared store.
 - Framework and host are both Cloudflare-stewarded. Mitigation: output is plain static files that any host can serve; avoid Cloudflare-only APIs in the main site without a decision record.
 - Revisit if the main site needs accounts, a database, or substantial shared client state across pages. Prefer a separate app first; reconsider Next.js only if that split stops making sense.
-- The R1 proof of concept (motion-heavy hero, one MDX page, one island, deployed on the free tier) is the first Phase 0 task and should confirm the budgets in practice.
+- The R1 proof of concept (motion-heavy hero, one MDX page, one island, deployed on the free tier) is the first Phase 0 task and should confirm the budgets in practice. Replaced by record 0002: the scaffold and first deploy act as the proof of concept, and motion work comes with the brand.

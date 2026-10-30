@@ -1,6 +1,6 @@
 # Brand layer
 
-Everything that makes the site look and sound like the organization lives here and in `public/brand/`. The final brand lands as one pull request that touches only these two folders (SPEC section 6). Components read from this layer and never hard-code a name, colour, font, duration, logo or contact detail.
+Everything that makes the site look and sound like the organization lives here and in `public/brand/`. Brand values stay in these two folders; brand expression such as signature visuals and layout can reach the shared layouts and named components (SPEC section 6). Components read from this layer and never hard-code a name, colour, font, duration, logo or contact detail.
 
 The current values are a **placeholder brand**: neutral greys, one blue accent, Noto Sans. It is meant to look unfinished.
 
@@ -29,7 +29,7 @@ Changes here need approval from a person (AGENTS.md).
 | `domain`      | `[TK]`                                    | Bare `.ca` domain, no `https://`                                                          |
 | `email`       | `[TK]`                                    | Organization email, created with the domain (D21)                                         |
 | `social`      | none                                      | List of `{ label, href }`                                                                 |
-| `regions`     | Kamloops, Victoria, Vancouver             | Priority order (SPEC section 2)                                                           |
+| `regions`     | Kamloops, Victoria, Vancouver             | Starting regions (SPEC section 2)                                                         |
 | `logo`        | `/brand/logo.svg`, `/brand/logo-mark.svg` | Full logo, square mark, and alt text                                                      |
 | `favicon`     | `/brand/favicon.svg`                      | SVG favicon                                                                               |
 | `socialImage` | `/brand/og-default.png`                   | 1200 × 630, with alt text                                                                 |
