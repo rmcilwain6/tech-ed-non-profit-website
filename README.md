@@ -33,4 +33,4 @@ npm run build
 
 ## Licence
 
-Code is released under the [MIT licence](LICENSE). Written content in `content/` and `docs/` is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Photography is not covered by either licence unless stated alongside the image. Fonts in `src/brand/fonts/` keep their own licences, kept beside them.
+Code is released under the [MIT licence](LICENSE). Written content in `content/` and `docs/` is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Photography is not covered by either licence unless stated alongside the image. Fonts in `src/brand/fonts/` and map data in `data/map/` keep their own licences, listed beside them.
