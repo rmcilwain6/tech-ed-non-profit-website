@@ -1,8 +1,8 @@
 # 0002: MVP scope and lighter process until launch
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-21
-- Deciders: Reed McIlwain (pending review)
+- Deciders: Reed McIlwain
 - Spec references: sections 4, 5, 7.4, 9, 10, 12; D5, D7, D16, D20, D23, D24; R1, R2, R4
 
 ## Context

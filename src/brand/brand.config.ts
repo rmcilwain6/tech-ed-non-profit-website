@@ -18,7 +18,7 @@ export interface Brand {
   domain: string;
   email: string;
   social: readonly SocialLink[];
-  /** In priority order (SPEC section 2). */
+  /** Where we start, not our boundary (SPEC section 2). */
   regions: readonly string[];
   /** Paths under `public/`. */
   logo: {

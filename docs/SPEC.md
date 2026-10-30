@@ -1,4 +1,4 @@
-# Website Spec (v0.5)
+# Website Spec (v0.6)
 
 Status: moved into the repo from Notion on 2026-10-20. This file is now the source of truth; changes go through pull requests. Section 14 tracks every decision as **Decided**, **Open (board)** or **Open (research)**. Research tasks (R1, R2, ...) are defined in section 15.
 
@@ -8,7 +8,7 @@ Status: moved into the repo from Notion on 2026-10-20. This file is now the sour
 
 Owners: Reed McIlwain and Nicole Peverley (shared; no fixed split of roles)
 
-Source material: 2026-10-15 requirements meeting minutes; strategic framework draft (Oct 2026); spec Q&A 2026-10-17 (two rounds); stack decision 2026-10-20; MVP scoping 2026-10-21
+Source material: 2026-10-15 requirements meeting minutes; strategic framework draft (Oct 2026); spec Q&A 2026-10-17 (two rounds); stack decision 2026-10-20; MVP scoping 2026-10-21; brand and Valleyview planning to 2026-10-29
 
 ---
 
@@ -21,21 +21,23 @@ Build the public website for a BC technology education nonprofit (name not yet c
 3. Publish our positions, resources and values openly.
 4. Serve as a working demonstration that we build technology well: fast, accessible, private by default.
 
-The site is built **before** the name and brand are final. Brand application must be a single, isolated change (section 6).
+The site is built **before** the name and brand are final. Brand values stay in one place and brand expression stays in known places, so applying the brand does not mean rebuilding the site (section 6).
 
 ## 2. Organizational context agents must know
 
 - Four strategic pillars (board vote, Oct 15 2026):
   1. Be an independent voice on technology in BC education.
   2. Build lasting, face-to-face partnerships with educators and communities.
-  3. Help students understand, question and shape the digital world.
+  3. Help learners understand, question and shape the digital world.
   4. Empower young people to build their ideas now.
-- Regions in priority order: Kamloops, Victoria, Vancouver.
-- We are a BC organization working on a BC problem. BC identity (its geography, its map, its regions) is expected to shape the brand and the site's feel.
+- Starting regions: Kamloops, Victoria, Vancouver. These are where we start and have reach, not our boundary. The organization is province-wide and the site must read that way: a teacher in the North, the Rockies, a rural community or an Indigenous school should never conclude "this isn't for me".
+- We are a BC organization working on a BC problem. BC identity is settled. How it shows up (visuals, colour, language, the name, or a mix) is being worked out in the brand process (D25).
 - Values that become engineering rules: skepticism of ed-tech business models, transparency, privacy by default, face-to-face over platform.
 - Public voice: plain language, no marketing language, critique ideas not people.
 
 ## 3. Audiences
+
+This order sets what we build first. It does not rank people: every audience meets the same brand and comes to us as they are.
 
 | Priority | Audience                                | What they need                                           |
 | -------- | --------------------------------------- | -------------------------------------------------------- |
@@ -75,7 +77,7 @@ Pages: Home, About, Board, Valleyview Grant (information only), Funding, Contact
 
 ### Phase 2: Brand and launch
 
-- Apply name, logo, colours, type and motion language through the brand layer.
+- Apply name, logo, colours, type and motion language as section 6 describes.
 - Register the domain, set up the organization email, connect the domain, make production public, remove `noindex`.
 - Pre-launch checks (section 9.2) and launch checklist (section 13).
 - Stretch goal: anonymous page view counts (D7).
@@ -84,12 +86,14 @@ Pages: Home, About, Board, Valleyview Grant (information only), Funding, Contact
 
 Target: mid-November 2026. Website, brand and board work run in parallel, with several people involved. The brand is the hardest piece; if it is not ready, the launch date moves, and that is fine. The site goes public with the final name, brand and domain together, and there is no public interim URL. Until launch, deploys are visible only to the team (D23).
 
+Valleyview depends on this date. Promotion to students and application intake, planned for late November, start only once the website and the application form are live.
+
 ### Post-MVP (soon after launch)
 
 - The automated quality suite in section 9.3.
 - Agent skills (section 12.6).
 - Named analytics events (section 10).
-- Valleyview application link and status, once the board settles how applications are handled (D5).
+- Valleyview automatic page status (section 7.4). The application link is not tied to a phase: it ships as soon as D5 is decided, at launch if that is possible.
 
 ### Phase 3: Publishing (soon after launch)
 
@@ -97,7 +101,8 @@ Blog/News first, then Teacher Resources, Tool Guide, Events, Get Involved, FAQ, 
 
 ### Phase 4: Interactive tools (each gets its own spec)
 
-- BC map.
+- District policy map: each school district's public positions on AI, phones and classroom technology, as a public data set with a published collection method, plus an interface on the site (map, list or charts). It covers districts, not individual trustees.
+- Other uses of the BC map (D25).
 - Troubleshooting toolkit (web plus printable PDF).
 - Digital skills check (runs in the browser, stores nothing).
 - Annual report as a web page.
@@ -115,13 +120,18 @@ Blog/News first, then Teacher Resources, Tool Guide, Events, Get Involved, FAQ, 
 
 ## 6. Brand layer (swap-in architecture)
 
-Goal: applying the final brand is one pull request that touches only `src/brand/` and `public/brand/`.
+Goal: applying the final brand does not mean rewriting content or page structure.
+
+- **Brand values** (name, contact details, colours, type, spacing, motion tokens, logos) live only in `src/brand/` and `public/brand/`.
+- **Brand expression** (signature visuals, layout, motion patterns) can need changes outside those folders. Keep it in the shared layouts and named components, not scattered through pages. Keep content in `content/`, so restyling a page does not touch its words.
 
 ```
 src/brand/
   brand.config.ts   # name, shortName, tagline, domain, email, social links, regions
+  brand.css         # entry point; imports fonts.css and tokens.css
   tokens.css        # colour (light and dark), type scale, spacing, radius, motion tokens
-  fonts.*           # self-hosted font definitions
+  fonts.css         # self-hosted font definitions
+  fonts/            # font files and their licences
 public/brand/
   logo.svg, logo-mark.svg, favicon.svg, og-default.png
 ```
@@ -144,15 +154,15 @@ All pages share: header with primary navigation, footer (contact, regions, priva
 
 - One-sentence statement of who we are (`[TK]` until the mission is final).
 - The four pillars, linking to About.
-- Valleyview Grant highlight linking to the grant page. Automatic status (open / opening soon / closed) is post-MVP (section 7.4).
+- Valleyview Grant highlight above the fold, linking to the grant page. Automatic status (open / opening soon / closed) is post-MVP (section 7.4).
 - Primary call to action: **Contact us**.
-- Regional presence: Kamloops, Victoria, Vancouver. A strong candidate for the site's signature BC visual and motion (section 8.2).
+- Our presence in BC: the three starting regions, shown so they do not read as our boundary (section 2). Which BC visual appears here, and how prominently, is open (D25).
 
 ### 7.2 About (`/about`) Phase 1
 
 - Mission statement (`[TK]` until ratified).
 - Pillars with approved one-line definitions.
-- Values and how we work (remote-first, in person by choice, three regions).
+- Values and how we work (remote-first, in person by choice, three starting regions, province-wide in scope).
 
 ### 7.3 Board (`/board`) Phase 1
 
@@ -166,11 +176,13 @@ Card per person, with data in `content/board.ts`, schema-validated:
 
 ### 7.4 Valleyview Social Innovation Grant (`/valleyview`) Phase 1, information only
 
-For MVP this is a well-designed information page. How applications are collected and handled is not the website's decision; the board is working it out (D5). The likely outcome is an outbound link to a Canadian-hosted form or survey tool.
+This is a well-designed information page until D5 is decided. How applications are collected and handled is not the website's decision (D5). The likely outcome is an outbound link to a Canadian-hosted form or survey tool.
 
-MVP:
+This year keeps last year's format and is open to Grade 12 students at Valleyview only. The grant must read as advancing education: recipients agree to mentorship and to follow-up showing how the grant was used to learn, so do not describe it as "no strings attached".
 
-- What it is, who can apply, award amount, what recipients get (funding plus mentorship). Use `[TK]` for any detail the board has not confirmed.
+Information page:
+
+- What it is, who can apply, award amount, what recipients get (funding plus mentorship), what they agree to in return. Use `[TK]` for any detail the board has not confirmed.
 - The three application questions: what's the idea, why are you the right person, how will this help.
 - Timeline from data, where dates are known.
 - How and when to apply, as text. No apply button until D5 is decided.
@@ -178,9 +190,12 @@ MVP:
 - No past-recipient section.
 - Short, memorable URL for posters and school announcements.
 
-Post-MVP, once D5 is decided:
+Once D5 is decided:
 
 - Apply button pointing to the application destination. Outside the window, the button is replaced by explanatory text and the next expected date.
+
+Post-MVP:
+
 - Page status (open / opening soon / closed) computed from dates. It must stay correct on a static site: status computed only at build time goes stale when the window opens or closes, and the text must make sense without JavaScript.
 
 ### 7.5 Funding (`/funding`) Phase 1
@@ -260,7 +275,8 @@ Fixed regardless of stack:
 ### 8.2 Look, feel and motion
 
 - Approachable, active and unique. The site should feel alive and clearly from BC.
-- BC geography and the map of BC are expected brand ingredients. Design research (R5) explores this before the brand pass.
+- How BC shows up in the brand is open (D25). Design research (R5) explores this before the brand pass. The BC map will have a place on the site, and visitors should be able to control or hide it. It is not decided as the core brand element.
+- Ideas kept from the layout studies, not yet scoped: a "page receipt" showing openly how each page is built and what it loads, and "next stops" that continue the reader's path at the end of a page.
 - Motion is part of the identity, under these limits:
   - Every animation respects `prefers-reduced-motion` with a still alternative.
   - Motion never delays or hides content. Text is readable at first paint.
@@ -336,13 +352,13 @@ The Privacy page names the tool. Optional, if cheap: publish the aggregate numbe
 /CLAUDE.md                 # imports AGENTS.md
 /docs/SPEC.md              # this document
 /docs/decisions/           # numbered decision records
-/docs/research/            # technical research findings, if moved from Drive (D22)
+/docs/research/            # technical research findings moved from Drive (D22), prototypes kept for reference
 /docs/CONTENT.md           # editing guide, voice and style (when needed)
 /.claude/skills/           # skills, also listed in AGENTS.md so any agent can read them (post-MVP)
 /content/                  # pages and typed data
 /src/                      # application code, brand layer
 /public/brand/             # logo, favicon, social image
-/tests/                    # end-to-end, unit, visual fixtures
+/tests/                    # end-to-end, unit, visual fixtures (post-MVP)
 /.github/                  # CI, issue and pull request templates
 ```
 
@@ -383,7 +399,7 @@ Write these once the patterns they describe have settled in real code. `add-page
 | `add-page`      | New route, content file, metadata, navigation entry, end-to-end test, from the page template                                                |
 | `add-post`      | Converts a submitted draft into a blog post with valid metadata (Phase 3)                                                                   |
 | `review-pr`     | Checks a pull request against this spec, section 4 and section 9                                                                            |
-| `brand-swap`    | Applies a brand package to the brand layer only, then runs visual checks                                                                    |
+| `brand-swap`    | Applies a brand package as section 6 describes, then runs visual checks                                                                     |
 | `research-task` | Runs an R-task and writes findings in a fixed format: question, options, criteria, evidence with sources, recommendation (location per D22) |
 | `grill-me`      | Interviews a human to turn a vague request into an issue with acceptance criteria                                                           |
 
@@ -394,9 +410,10 @@ Write these once the patterns they describe have settled in real code. `add-page
 
 ## 13. Launch checklist (Phase 2)
 
-- [ ] Name, logo, colours, type and motion applied through the brand layer only
+- [ ] Name, logo, colours, type and motion applied as section 6 describes
 - [ ] Pre-launch checks in section 9.2 pass with the final brand, both themes
 - [ ] No `[TK:` placeholders remain
+- [ ] Fixture pages (`/fixtures/`) removed from the production build
 - [ ] Domain connected, HTTPS enforced, `www` redirect decided
 - [ ] Cloudflare Access removed from the production domain
 - [ ] `noindex` removed
@@ -406,32 +423,33 @@ Write these once the patterns they describe have settled in real code. `add-page
 
 ## 14. Decisions
 
-| ID  | Decision                                             | Status              | Resolution or default                                                                                                                                                                          |
-| --- | ---------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Stack and hosting                                    | Decided             | Astro on Cloudflare Workers (static assets), free tier. Oct 20, 2026. Record 0001                                                                                                              |
-| D2  | Domain                                               | Open (board)        | `.ca`, after the name is chosen                                                                                                                                                                |
-| D3  | GitHub home                                          | Decided             | Reed's personal account, transferable later                                                                                                                                                    |
-| D4  | Home call to action                                  | Decided             | Contact us                                                                                                                                                                                     |
-| D5  | Where Valleyview applications are collected          | Open (board)        | Decided outside the website, in board discussions; R4 informs it. Likely an outbound link to a Canadian-hosted form tool. Not an MVP blocker                                                   |
-| D6  | Repo visibility                                      | Decided             | Public                                                                                                                                                                                         |
-| D7  | Analytics                                            | Decided for MVP     | Anonymous page views only, no cookies, as a stretch goal for launch. Named events deferred; tool via R2                                                                                        |
-| D8  | Content editing and CMS                              | Decided for now     | Drafts submitted, published via pull request. CMS later via R3                                                                                                                                 |
-| D9  | Languages                                            | Decided             | English only. i18n-ready routing. French and Indigenous languages are stretch goals (R7)                                                                                                       |
-| D10 | Dark mode                                            | Decided             | At launch, system default plus toggle                                                                                                                                                          |
-| D11 | Funding disclosure                                   | Open (board)        | Values only on the page until decided; may live in formal reports instead                                                                                                                      |
-| D12 | Donations                                            | Decided             | Out of scope                                                                                                                                                                                   |
-| D13 | Land acknowledgement / Truth and Reconciliation page | Open (board)        | No footer acknowledgement by default. R6 informs the board                                                                                                                                     |
-| D14 | Regional leads shown publicly                        | Open (board)        | Not shown                                                                                                                                                                                      |
-| D15 | Tool Guide names specific products                   | Open (board)        | Phase 3                                                                                                                                                                                        |
-| D16 | Launch date                                          | Decided (target)    | Mid-November 2026, together with name, brand and domain (D20). Moves if the brand is not ready. Revised Oct 21, 2026 (record 0002)                                                             |
-| D17 | Licence                                              | Decided             | MIT for code, CC BY 4.0 for written content                                                                                                                                                    |
-| D18 | Human review on every pull request                   | Decided             | Yes, including content-only changes                                                                                                                                                            |
-| D19 | Past Valleyview recipients featured                  | Decided for Phase 1 | No. Revisit with consent later                                                                                                                                                                 |
-| D20 | Valleyview page before the name exists               | Decided             | No public interim launch. The site, name, brand and domain go public together. Valleyview launches as an information page; the application link follows D5. Revised Oct 21, 2026 (record 0002) |
-| D21 | Organization email                                   | Open (blocked)      | Created with the domain in Phase 2                                                                                                                                                             |
-| D22 | Where research findings live                         | Decided for now     | Google Drive. Technical findings may move to `docs/research/`                                                                                                                                  |
-| D23 | Pre-launch visibility                                | Decided             | Production and preview deploys behind Cloudflare Access until launch; only allowlisted team members can see them. Oct 21, 2026                                                                 |
-| D24 | MVP scope                                            | Decided             | Phases 0 to 2 with the section 4 rules; heavy automation, skills and analytics events after launch. Oct 21, 2026 (record 0002)                                                                 |
+| ID  | Decision                                             | Status                 | Resolution or default                                                                                                                                                                                     |
+| --- | ---------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Stack and hosting                                    | Decided                | Astro on Cloudflare Workers (static assets), free tier. Oct 20, 2026. Record 0001                                                                                                                         |
+| D2  | Domain                                               | Open (board)           | `.ca`, after the name is chosen                                                                                                                                                                           |
+| D3  | GitHub home                                          | Decided                | Reed's personal account, transferable later                                                                                                                                                               |
+| D4  | Home call to action                                  | Decided                | Contact us                                                                                                                                                                                                |
+| D5  | Where Valleyview applications are collected          | Open (board)           | Decided outside the website, in board discussions; R4 informs it. Likely an outbound link to a Canadian-hosted form tool. The information page can launch without it; student promotion and intake cannot |
+| D6  | Repo visibility                                      | Decided                | Public                                                                                                                                                                                                    |
+| D7  | Analytics                                            | Decided for MVP        | Anonymous page views only, no cookies, as a stretch goal for launch. Named events deferred; tool via R2                                                                                                   |
+| D8  | Content editing and CMS                              | Decided for now        | Drafts submitted, published via pull request. CMS later via R3                                                                                                                                            |
+| D9  | Languages                                            | Decided                | English only. i18n-ready routing. French and Indigenous languages are stretch goals (R7)                                                                                                                  |
+| D10 | Dark mode                                            | Decided                | At launch, system default plus toggle                                                                                                                                                                     |
+| D11 | Funding disclosure                                   | Open (board)           | Values only on the page until decided; may live in formal reports instead                                                                                                                                 |
+| D12 | Donations                                            | Decided                | Out of scope                                                                                                                                                                                              |
+| D13 | Land acknowledgement / Truth and Reconciliation page | Open (board)           | No footer acknowledgement by default. R6 informs the board                                                                                                                                                |
+| D14 | Regional leads shown publicly                        | Open (board)           | Not shown                                                                                                                                                                                                 |
+| D15 | Tool Guide names specific products                   | Open (board)           | Phase 3                                                                                                                                                                                                   |
+| D16 | Launch date                                          | Decided (target)       | Mid-November 2026, together with name, brand and domain (D20). Moves if the brand is not ready. Revised Oct 21, 2026 (record 0002)                                                                        |
+| D17 | Licence                                              | Decided                | MIT for code, CC BY 4.0 for written content                                                                                                                                                               |
+| D18 | Human review on every pull request                   | Decided                | Yes, including content-only changes                                                                                                                                                                       |
+| D19 | Past Valleyview recipients featured                  | Decided for Phase 1    | No. Revisit with consent later                                                                                                                                                                            |
+| D20 | Valleyview page before the name exists               | Decided                | No public interim launch. The site, name, brand and domain go public together. Valleyview launches as an information page; the application link follows D5. Revised Oct 21, 2026 (record 0002)            |
+| D21 | Organization email                                   | Open (blocked)         | Created with the domain in Phase 2                                                                                                                                                                        |
+| D22 | Where research findings live                         | Decided for now        | Google Drive. Technical findings may move to `docs/research/`                                                                                                                                             |
+| D23 | Pre-launch visibility                                | Decided                | Production and preview deploys behind Cloudflare Access until launch; only allowlisted team members can see them. Oct 21, 2026                                                                            |
+| D24 | MVP scope                                            | Decided                | Phases 0 to 2 with the section 4 rules; heavy automation, skills and analytics events after launch. Oct 21, 2026 (record 0002)                                                                            |
+| D25 | Role of the BC map and how BC shows up in the brand  | Open (brand and board) | BC identity is settled. The map has a place on the site; how it ranks against the rest of the identity is open. Oct 29, 2026                                                                              |
 
 ## 15. Research tasks
 
@@ -442,7 +460,7 @@ Each produces a findings document in Google Drive (D22) using the `research-task
 | R1  | Which stack and host best meet T1 to T10?                                                                                                                                                                                                                                                           | Resolved by D1. The scaffold and first deploy act as the proof of concept; motion work comes with the brand |
 | R2  | Which tool counts anonymous page views (and later named events) with no cookies, at no cost? Include hosted options and a self-built counter on the host's free tier. Check rules 2 and 3: whether a vendor-hosted script counts as a third-party request, and what the tool does with IP addresses | Page views at launch (stretch goal, D7)                                                                     |
 | R3  | Which CMS lets non-technical writers draft and submit posts without GitHub accounts, works with Astro, and costs nothing?                                                                                                                                                                           | Phase 3                                                                                                     |
-| R4  | How should Valleyview applications be collected? Compare building our own (separate system, Canadian hosting) with Canadian form tools. Account for applicants who are minors, BC privacy law (PIPA), what schools expect, cost, and effort                                                         | Valleyview application link (post-MVP, D5). Owned by the board discussion                                   |
+| R4  | How should Valleyview applications be collected? Compare building our own (separate system, Canadian hosting) with Canadian form tools. Account for applicants who are minors, BC privacy law (PIPA), what schools expect, cost, and effort                                                         | Valleyview application link and intake (D5). Owned by the board discussion                                  |
 | R5  | Design inspiration: sites and identities that feel approachable, active and rooted in place, especially BC and Canadian examples, and how others use maps, geography and motion                                                                                                                     | Phase 2                                                                                                     |
 | R6  | Best practices for land acknowledgements and organizational responses to the TRC Calls to Action, especially Calls 62 to 65 on education. What makes them meaningful rather than performative, and who should be consulted                                                                          | Board decision D13                                                                                          |
 | R7  | What supporting French and Indigenous languages would take: technical needs, translation and community partnership, and examples of respectful practice                                                                                                                                             | Stretch                                                                                                     |
