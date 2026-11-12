@@ -376,6 +376,7 @@ The Privacy page names the tool. Optional, if cheap: publish the aggregate numbe
 - Size guideline: under about 400 changed lines excluding content and lockfiles. Split larger work where it is sensible.
 - Template: what changed, why, linked issue, and screenshots when the UI changes (mobile and desktop; light and dark where it matters).
 - Preview deploy URL on every pull request (behind Cloudflare Access until launch).
+- `main` is staging. Production deploys only from a published GitHub release, which moves the `production` branch (record 0003).
 - Conventional Commits.
 
 ### 12.3 Agent tools

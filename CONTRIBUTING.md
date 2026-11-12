@@ -20,7 +20,7 @@ We are in MVP mode, working toward a first launch. The spec is a living guide; i
 
 ## Previews and deploys
 
-Cloudflare builds every pull request and comments a preview link on it, sometimes a few minutes after the build finishes. Merging to `main` deploys the site. Until launch, both are behind Cloudflare Access, so you need an invitation to the Cloudflare account to open them. Ask a maintainer.
+Cloudflare builds every pull request and comments a preview link on it, sometimes a few minutes after the build finishes. `main` is staging: each merge updates a preview of `main`. Production changes only when a maintainer publishes a GitHub release, which moves the `production` branch to that release. Until launch, all of these are behind Cloudflare Access, so you need an invitation to the Cloudflare account to open them. Ask a maintainer.
 
 Do not deploy by hand with Wrangler. The Wrangler config does not name a Cloudflare account, so a manual deploy goes to whichever account you are logged in to. Build settings live in the Cloudflare dashboard and are documented in [decision record 0003](docs/decisions/0003-deploy-with-workers-builds.md).
 

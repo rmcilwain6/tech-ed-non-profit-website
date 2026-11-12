@@ -1,0 +1,56 @@
+# Publishing a GitHub release moves the `production` branch to the release's
+# commit. Cloudflare Workers Builds deploys `production` (record 0003).
+name: Release to production
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-production
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    # Pre-releases do not deploy.
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - name: Find the release commit
+        run: |
+          sha=$(gh api "repos/$REPO/commits/$TAG" --jq .sha)
+          echo "SHA=$sha" >> "$GITHUB_ENV"
+          echo "Release $TAG is commit $sha"
+
+      - name: Check the commit is on main
+        run: |
+          # "identical" or "behind" means the commit is main or an ancestor of it.
+          status=$(gh api "repos/$REPO/compare/main...$SHA" --jq .status)
+          case "$status" in
+            identical | behind) ;;
+            *)
+              echo "::error::Release $TAG ($SHA) is not on main. Tag a commit from main."
+              exit 1
+              ;;
+          esac
+
+      - name: Move production forward
+        run: |
+          if gh api "repos/$REPO/git/ref/heads/production" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/$REPO/git/refs/heads/production" \
+              -f sha="$SHA" -F force=false > /dev/null || {
+              echo "::error::production can only move forward. To roll back, use Deployments in the Cloudflare dashboard, or revert on main and release again."
+              exit 1
+            }
+          else
+            gh api -X POST "repos/$REPO/git/refs" \
+              -f ref=refs/heads/production -f sha="$SHA" > /dev/null
+          fi
+          echo "production is now at $SHA ($TAG). Cloudflare will build and deploy it."
