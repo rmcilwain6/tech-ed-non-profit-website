@@ -1,8 +1,8 @@
 # 0003: Deploy with Cloudflare Workers Builds
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-30
-- Deciders: pending review
+- Deciders: Reed McIlwain, Nicole Peverley
 - Spec references: section 8.1, 11, 13; D1, D23; record 0001
 
 ## Context
