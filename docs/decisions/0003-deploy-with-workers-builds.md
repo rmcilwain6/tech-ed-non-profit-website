@@ -25,7 +25,14 @@ Option 1. The dashboard settings are:
 
 `wrangler.jsonc` serves `dist/` as static assets with no Worker script. Wrangler is a development dependency, so builds use the version in the lockfile.
 
-Preview URLs are public by default. Before connecting the repository, use "Protect all Workers" on the Workers & Pages overview and choose "All traffic", so the first deploy is already protected. Keep the allowlist out of the repo.
+Preview URLs are public by default, so Access must be on before the repository is connected. Access can only be turned on for a Worker that already exists, so the order is:
+
+1. Create a placeholder Worker from a template (not from Git), named `website` to match `wrangler.jsonc`.
+2. In that Worker's settings, turn on Cloudflare Access for the `workers.dev` and preview URLs, and limit the policy to the team.
+3. Open the `workers.dev` URL in a private window and confirm it asks for sign-in.
+4. Connect the repository to that Worker. Builds replace the placeholder with the site.
+
+Keep the allowlist out of the repo.
 
 ## Consequences
 
