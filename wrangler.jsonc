@@ -7,4 +7,6 @@
     "directory": "./dist",
     "not_found_handling": "404-page",
   },
+  // Required by `wrangler preview` for per-PR previews. Empty: previews use the top-level settings.
+  "previews": {},
 }

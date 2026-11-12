@@ -23,7 +23,7 @@ Option 1. The dashboard settings are:
 - Deploy command: `npx wrangler deploy`
 - Preview command: `npx wrangler preview`
 
-`wrangler.jsonc` serves `dist/` as static assets with no Worker script. Wrangler is a development dependency, so builds use the version in the lockfile.
+`wrangler.jsonc` serves `dist/` as static assets with no Worker script. It also has an empty `previews` block, which `wrangler preview` requires. Wrangler is a development dependency, so builds use the version in the lockfile.
 
 Preview URLs are public by default, so Access must be on before the repository is connected. Access can only be turned on for a Worker that already exists, so the order is:
 
