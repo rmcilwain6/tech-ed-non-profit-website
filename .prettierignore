@@ -2,3 +2,5 @@ dist/
 .astro/
 node_modules/
 package-lock.json
+data/map/*.json
+docs/research/layout-studies/

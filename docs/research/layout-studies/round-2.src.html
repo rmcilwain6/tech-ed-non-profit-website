@@ -1,0 +1,1076 @@
+<title>Map Layout Studies</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap">
+<style>
+/* Layout: a lab bench. Controls, then a resizable frame holding the live mock-up, then a study sheet. Every mock-up is built on one real map of BC. */
+@property --cx { syntax: "<number>"; inherits: true; initial-value: 500; }
+@property --cy { syntax: "<number>"; inherits: true; initial-value: 433; }
+@property --z { syntax: "<number>"; inherits: true; initial-value: 1; }
+
+:root {
+  --paper: #f6f8f6;
+  --surface: #e8eeea;
+  --ink: #17201d;
+  --muted: #53605a;
+  --line: #c6cfca;
+  --accent: #145c62;
+  --on-accent: #ffffff;
+  --trace: #d4532e;
+  --vv: #ffd166;
+  --on-vv: #17201d;
+  --sea: #d3e6ec;
+  --land: #fbfcf8;
+  --land-2: #e6ebe4;
+  --coast: #7d9aa3;
+  --river: #6ea8bd;
+  --dline: #9aa8a0;
+  --school: #145c62;
+  --school-2: #7a5ab8;
+  --hl: rgba(212, 83, 46, 0.14);
+
+  --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --f-mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+
+  --r-lg: 20px;
+  --dur: 240ms;
+  --dur-map: 1100ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1513; --surface: #1a2320; --ink: #e5ebe7; --muted: #a2aea8; --line: #33403a;
+    --accent: #6fc6cc; --on-accent: #0b1a1c; --trace: #f07a52; --vv: #f2c14e; --on-vv: #17201d;
+    --sea: #0e1f26; --land: #1b2420; --land-2: #141b18; --coast: #4d6d78; --river: #3f7c92; --dline: #50605a;
+    --school: #6fc6cc; --school-2: #b39ae6; --hl: rgba(240, 122, 82, 0.2);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1513; --surface: #1a2320; --ink: #e5ebe7; --muted: #a2aea8; --line: #33403a;
+  --accent: #6fc6cc; --on-accent: #0b1a1c; --trace: #f07a52; --vv: #f2c14e; --on-vv: #17201d;
+  --sea: #0e1f26; --land: #1b2420; --land-2: #141b18; --coast: #4d6d78; --river: #3f7c92; --dline: #50605a;
+  --school: #6fc6cc; --school-2: #b39ae6; --hl: rgba(240, 122, 82, 0.2);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-underline-offset: 0.18em; }
+
+/* ---------- Shell ---------- */
+.lab { max-width: 84rem; margin: 0 auto; padding-block: 1.75rem 4rem; display: grid; gap: 1.5rem; }
+.lab-head { display: grid; gap: 0.6rem; }
+.lab-head h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5vw, 3rem); line-height: 1; letter-spacing: -0.02em; margin: 0; }
+.lab-head p { margin: 0; max-width: 68ch; }
+.lab-head .small { color: var(--muted); font-size: 0.95rem; }
+.kicker { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.built { display: grid; gap: 0.75rem; }
+@media (min-width: 820px) { .built { grid-template-columns: 1fr 1fr; } }
+.built details { font-size: 0.95rem; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.9rem; }
+.built summary { cursor: pointer; color: var(--ink); font-weight: 700; }
+.built ul { margin: 0.5rem 0 0.2rem; padding-left: 1.2rem; }
+.built li + li { margin-top: 0.25rem; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end; }
+.controls fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.controls legend { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; padding: 0; }
+.seg { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg label { position: relative; display: block; }
+.seg label + label { border-left: 1px solid var(--line); }
+.seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 0.5rem 1rem; font-size: 0.95rem; }
+.seg input:checked + span { background: var(--ink); color: var(--paper); }
+.seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: -3px; }
+.checks { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; padding-bottom: 0.45rem; }
+.checks label { display: flex; gap: 0.4rem; align-items: center; font-size: 0.95rem; }
+.checks input { accent-color: var(--accent); width: 1.05rem; height: 1.05rem; }
+
+.frame-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; }
+.frame {
+  --w: 100%;
+  --fh: min(82vh, 900px);
+  width: var(--w);
+  max-width: 100%;
+  height: var(--fh);
+  overflow: auto;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  container-type: inline-size;
+  container-name: site;
+  position: relative;
+  transition: width var(--dur) var(--ease);
+}
+
+.sheet { display: grid; gap: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+@media (min-width: 900px) { .sheet { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+.sheet h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; letter-spacing: -0.01em; margin: 0 0 0.25rem; }
+.sheet .sum { margin: 0 0 1rem; color: var(--muted); max-width: 60ch; }
+.facts { display: grid; gap: 0.9rem; margin: 0; }
+.facts div { display: grid; gap: 0.15rem; min-width: 0; }
+.facts dt { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; max-width: 66ch; }
+.keep { display: grid; gap: 1rem; align-content: start; min-width: 0; }
+.keep fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 0.75rem 1rem 1rem; margin: 0; }
+.keep legend { padding: 0 0.35rem; font-weight: 700; }
+.keep label { display: flex; gap: 0.55rem; align-items: flex-start; padding: 0.3rem 0; }
+.keep input[type="checkbox"] { accent-color: var(--accent); width: 1.05rem; height: 1.05rem; margin-top: 0.2rem; flex: none; }
+.keep textarea { width: 100%; min-height: 7rem; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem; resize: vertical; }
+.keep .lbl { font-weight: 700; display: block; margin-bottom: 0.3rem; }
+.copy-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.lab-btn { font: inherit; font-weight: 700; background: var(--ink); color: var(--paper); border: 0; border-radius: 999px; padding: 0.6rem 1.1rem; cursor: pointer; }
+.copy-status { font-size: 0.9rem; color: var(--muted); }
+.copy-out { width: 100%; min-height: 8rem; font-family: var(--f-mono); font-size: 0.8rem; }
+.mix { font-size: 0.95rem; color: var(--muted); margin: 0; max-width: 60ch; }
+
+/* ---------- Shared mock-up pieces ---------- */
+.site { min-height: 100%; position: relative; color: var(--ink); background: var(--paper); font-family: var(--f-body); }
+.site a { color: inherit; }
+.tk { font-family: var(--f-mono); font-size: 0.82em; font-weight: 400; letter-spacing: 0; text-transform: none; background: var(--surface); color: var(--ink); border: 1px dashed var(--muted); border-radius: 4px; padding: 0 0.3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.ph-chip { display: inline-block; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid currentColor; padding: 0.1rem 0.5rem; border-radius: 999px; }
+.skip { position: absolute; left: 0.5rem; top: 0.5rem; z-index: 50; background: var(--ink); color: var(--paper) !important; padding: 0.5rem 0.75rem; border-radius: 8px; transform: translateY(-200%); }
+.skip:focus { transform: none; }
+.theme-btn { font: inherit; font-size: 0.85rem; background: transparent; color: inherit; border: 1.5px solid currentColor; border-radius: 999px; padding: 0.25rem 0.7rem; cursor: pointer; white-space: nowrap; }
+.site ul.plain { list-style: none; padding: 0; margin: 0; }
+.site main:focus, .site h1:focus { outline: none; }
+.mark { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; text-decoration: none; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent); color: var(--on-accent) !important; text-decoration: none; font-weight: 700; padding: 0.7rem 1.2rem; border-radius: 999px; }
+.btn span { transition: transform var(--dur) var(--ease); }
+.btn:hover span { transform: translateX(4px); }
+.vv-card { background: var(--vv); color: var(--on-vv); border-radius: var(--r-lg); padding: 1.25rem 1.4rem; display: grid; gap: 0.5rem; }
+.vv-card .for { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; }
+.vv-card .url { font-family: var(--f-display); font-weight: 800; font-size: clamp(2.2rem, 7cqi, 3.6rem); line-height: 1; letter-spacing: -0.02em; margin: 0; overflow-wrap: anywhere; }
+.vv-card p { margin: 0; }
+.vv-card .btn { background: var(--on-vv); color: var(--vv) !important; justify-self: start; margin-top: 0.4rem; }
+.vv-card a:focus-visible { outline-color: var(--on-vv); }
+.vv-card .tk { background: rgba(255, 255, 255, 0.55); color: var(--on-vv); border-color: var(--on-vv); }
+.map-note { font-size: 0.88rem; border: 1px solid var(--line); border-radius: 14px; padding: 0.7rem 0.9rem; display: grid; gap: 0.2rem; }
+.map-note b { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+.prose { display: grid; gap: 1.75rem; max-width: 40rem; }
+.prose section { display: grid; gap: 0.5rem; }
+.prose h2 { font-size: 1.3rem; margin: 0; font-family: var(--f-display); font-weight: 800; }
+.prose p, .prose ul, .prose ol, .prose dl { margin: 0; }
+.prose li + li { margin-top: 0.3rem; }
+.note { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
+.cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); }
+.cards article { display: grid; gap: 0.3rem; align-content: start; border: 1px solid var(--line); border-radius: 16px; padding: 0.8rem; }
+.cards .pin { font-family: var(--f-mono); font-size: 0.72rem; color: var(--trace); }
+.cards h3 { margin: 0; font-size: 1rem; }
+.cards p { margin: 0; font-size: 0.9rem; }
+.portrait { aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; border: 1px dashed var(--muted); display: grid; place-items: center; text-align: center; padding: 0.5rem; font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); background: repeating-linear-gradient(135deg, var(--surface) 0 10px, transparent 10px 20px); }
+.timeline { display: grid; gap: 0.5rem; }
+.timeline div { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
+.timeline dt { font-weight: 700; }
+.timeline dd { margin: 0; }
+.faq dt { font-weight: 700; margin-top: 0.6rem; }
+.faq dd { margin: 0.2rem 0 0; }
+.next-list { display: grid; gap: 0.6rem; }
+.next-list a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.1rem 1rem; text-decoration: none; border: 1.5px solid var(--ink); border-radius: 16px; padding: 0.75rem 1rem; }
+.next-list .t { font-family: var(--f-display); font-weight: 800; font-size: 1.15rem; }
+.next-list .d { font-size: 0.85rem; color: var(--muted); grid-column: 1; }
+.next-list .ar { grid-column: 2; grid-row: 1 / span 2; font-size: 1.4rem; font-weight: 800; transition: transform var(--dur) var(--ease); }
+.next-list a:hover .ar { transform: translateX(6px); }
+.receipt { font-family: var(--f-mono); font-size: 0.8rem; border: 1.5px dashed var(--muted); border-radius: 14px; padding: 0.9rem 1rem; display: grid; gap: 0.1rem; margin: 0; max-width: 30rem; }
+.receipt .rt { font-weight: 600; margin-bottom: 0.3rem; }
+.receipt div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dotted var(--line); padding: 0.22rem 0; }
+.receipt dt { color: var(--muted); }
+.receipt dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.receipt .rnote { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.45; }
+.foot { border-top: 1px solid var(--line); padding: 1.5rem 1rem 2.5rem; display: grid; gap: 1.5rem; font-size: 0.92rem; }
+@container site (min-width: 760px) { .foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.foot h2 { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.35rem; font-weight: 400; }
+.foot p { margin: 0 0 0.75rem; }
+.foot .credits { font-size: 0.78rem; color: var(--muted); }
+
+.show-landmarks [data-landmark] { outline: 2px dashed var(--trace); outline-offset: -2px; }
+.show-landmarks [data-landmark]::after { content: attr(data-landmark); position: absolute; right: 4px; top: 4px; z-index: 60; font: 600 0.7rem var(--f-mono); background: var(--trace); color: var(--paper); padding: 0.1rem 0.35rem; border-radius: 4px; pointer-events: none; }
+.show-landmarks [data-landmark] { position: relative; }
+.show-landmarks .s-mapwrap[data-landmark], .show-landmarks .a-mapwrap[data-landmark] { position: sticky; }
+
+/* ---------- The map ---------- */
+.bcmap { display: block; width: 100%; height: 100%; --cx: 500; --cy: 433; --z: 1; transition: --cx var(--dur-map) var(--ease), --cy var(--dur-map) var(--ease), --z var(--dur-map) var(--ease); }
+.bcmap .cam { transform: translate(calc((500 - var(--cx) * var(--z)) * 1px), calc((433 - var(--cy) * var(--z)) * 1px)) scale(var(--z)); transform-origin: 0 0; }
+.bcmap .cs { transform: scale(calc(1 / var(--z))); transform-origin: 0 0; }
+.m-sea { fill: var(--sea); }
+.m-nb { fill: var(--land-2); }
+.m-land { fill: var(--land); stroke: var(--coast); stroke-width: 0.8; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.m-lakes { fill: var(--sea); }
+.m-rivers { fill: none; stroke: var(--river); stroke-width: 1.2; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.m-dlines { fill: none; stroke: var(--dline); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-dasharray: 3 3; }
+.m-dpoly { fill: transparent; }
+.m-dpoly:hover { fill: var(--hl); }
+.m-roads, .m-hwy, .m-ferry { fill: none; stroke: var(--trace); vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.m-roads { stroke-width: 1.4; opacity: 0.6; }
+.m-hwy { stroke-width: 3; }
+.m-ferry { stroke-width: 2; stroke-dasharray: 2 5; }
+.m-sch { fill: none; stroke: var(--school); stroke-width: 3; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.m-sch.ind { stroke: var(--school-2); }
+.m-transect { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-dasharray: 7 5; vector-effect: non-scaling-stroke; }
+.m-dot { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.m-lbl { font-family: var(--f-mono); font-size: 11px; fill: var(--ink); paint-order: stroke; stroke: var(--land); stroke-width: 3px; stroke-linejoin: round; }
+.m-glow { fill: none; stroke: var(--trace); stroke-width: 22; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0.28; animation: glow 2.6s ease-in-out infinite alternate; }
+.m-core { fill: none; stroke: var(--trace); stroke-width: 9; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.m-rlbl { font-family: var(--f-display); font-weight: 800; font-size: 15px; fill: var(--ink); paint-order: stroke; stroke: var(--land); stroke-width: 4px; stroke-linejoin: round; }
+.m-pin { fill: none; stroke: var(--accent); stroke-width: 11; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.m-pin-in { fill: none; stroke: var(--paper); stroke-width: 4; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+@keyframes glow { from { opacity: 0.12; } to { opacity: 0.4; } }
+.m-l { opacity: 0; pointer-events: none; transition: opacity 600ms var(--ease); }
+.bcmap:not([data-zoom="near"]) .pl-minor { opacity: 0; }
+.pl-minor { transition: opacity 400ms; }
+.bcmap[data-l~="roads"] .l-roads, .bcmap[data-l~="rivers"] .l-rivers, .bcmap[data-l~="districts"] .l-districts, .bcmap[data-l~="schools"] .l-schools,
+.bcmap[data-l~="places"] .l-places, .bcmap[data-l~="regions"] .l-regions, .bcmap[data-l~="board"] .l-board, .bcmap[data-l~="transect"] .l-transect { opacity: 1; pointer-events: auto; }
+/* Network styling of the same map */
+.bcmap.net .m-land { stroke: var(--line); }
+.bcmap.net .m-hwy { stroke-width: 7; }
+.bcmap.net .m-roads { stroke-width: 3.5; opacity: 0.85; }
+.bcmap.net .m-ferry { stroke-width: 4; stroke-dasharray: 1 8; }
+.bcmap.net .m-dot { stroke: var(--trace); stroke-width: 12; }
+.bcmap.net .m-dot-in { fill: none; stroke: var(--land); stroke-width: 6; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+
+/* Cross-section */
+.prof { position: absolute; left: 0; right: 0; bottom: 0; height: min(58%, 260px); background: var(--paper); border-top: 2px solid var(--ink); transform: translateY(105%); opacity: 0; transition: transform 800ms var(--ease), opacity 500ms var(--ease); z-index: 4; }
+.prof.on { transform: none; opacity: 1; }
+.prof svg { position: absolute; left: 3rem; right: 0.75rem; top: 1.6rem; bottom: 1.6rem; width: calc(100% - 3.75rem); height: calc(100% - 3.2rem); overflow: visible; }
+.p-land { fill: var(--land-2); }
+.p-sea { fill: var(--sea); }
+.p-line { fill: none; stroke: var(--ink); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.p-grid { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-dasharray: 2 3; }
+.p-ax { position: absolute; left: 0.4rem; font-family: var(--f-mono); font-size: 0.68rem; color: var(--muted); transform: translateY(-50%); }
+.p-title { position: absolute; left: 0.75rem; top: 0.35rem; font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
+.p-mk { position: absolute; bottom: 0.2rem; transform: translateX(-50%); font-family: var(--f-mono); font-size: 0.68rem; white-space: nowrap; }
+.p-mk.up { bottom: 0.95rem; }
+.p-feat { position: absolute; font-family: var(--f-mono); font-size: 0.66rem; font-style: italic; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
+@container site (max-width: 620px) { .p-mk.minor { display: none; } }
+
+/* ---------- Direction 1: Atlas ---------- */
+.a-head { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; align-items: center; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); background: var(--paper); position: relative; z-index: 6; }
+.a-head .mark { margin-right: auto; }
+.a-nav ul { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+.a-nav a { display: block; text-decoration: none; padding: 0.3rem 0.65rem; border-radius: 999px; font-size: 0.92rem; }
+.a-nav a:hover { background: var(--surface); }
+.a-nav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
+.a-body { display: grid; }
+.a-mapwrap { position: sticky; top: 0; height: calc(var(--fh) * 0.4); z-index: 5; background: var(--sea); overflow: hidden; border-bottom: 1px solid var(--line); }
+.a-sheet { padding: 1.4rem 1rem 0; display: grid; gap: 1.4rem; align-content: start; min-width: 0; background: var(--paper); }
+.a-sheet h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.9rem, 4.6cqi, 2.9rem); line-height: 1.04; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+.a-sheet .lede { font-size: 1.08rem; margin: 0; }
+@container site (min-width: 880px) {
+  .a-body { grid-template-columns: minmax(20rem, 31rem) minmax(0, 1fr); }
+  .a-mapwrap { grid-column: 2; grid-row: 1; height: var(--fh); border-bottom: 0; border-left: 1px solid var(--line); }
+  .a-sheet { grid-column: 1; grid-row: 1; padding: 1.75rem 1.5rem 0; }
+}
+.a-layers { position: absolute; right: 0.6rem; top: 0.6rem; z-index: 3; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; font-size: 0.85rem; max-width: min(17rem, calc(100% - 1.2rem)); max-height: calc(100% - 1.2rem); overflow: auto; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
+.a-layers summary { cursor: pointer; padding: 0.45rem 0.85rem; font-weight: 700; list-style: none; }
+.a-layers summary::-webkit-details-marker { display: none; }
+.a-layers summary::before { content: "▸ "; }
+.a-layers[open] summary::before { content: "▾ "; }
+.a-layers ul { list-style: none; margin: 0; padding: 0 0.85rem 0.7rem; display: grid; gap: 0.15rem; }
+.a-layers label { display: flex; gap: 0.45rem; align-items: flex-start; padding: 0.15rem 0; }
+.a-layers input { accent-color: var(--accent); margin-top: 0.2rem; flex: none; }
+.a-layers .off { color: var(--muted); }
+.a-layers .off small { display: block; font-size: 0.75rem; line-height: 1.35; }
+.d-atlas:has(#ly-roads:checked) .l-roads, .d-atlas:has(#ly-rivers:checked) .l-rivers, .d-atlas:has(#ly-districts:checked) .l-districts, .d-atlas:has(#ly-schools:checked) .l-schools,
+.d-atlas:has(#ly-places:checked) .l-places, .d-atlas:has(#ly-regions:checked) .l-regions, .d-atlas:has(#ly-board:checked) .l-board, .d-atlas:has(#ly-transect:checked) .l-transect { opacity: 1; pointer-events: auto; }
+.a-views { border: 0; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.a-views legend { font-weight: 700; margin-bottom: 0.4rem; padding: 0; }
+.a-views label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.6rem; align-items: start; border: 1.5px solid var(--line); border-radius: 14px; padding: 0.6rem 0.8rem; cursor: pointer; }
+.a-views label:has(input:checked) { border-color: var(--ink); background: var(--surface); }
+.a-views input { accent-color: var(--accent); margin-top: 0.25rem; }
+.a-views b { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 400; color: var(--muted); display: block; letter-spacing: 0.06em; text-transform: uppercase; }
+.a-sheet .foot { margin: 0 -1rem; }
+@container site (min-width: 880px) { .a-sheet .foot { margin: 0 -1.5rem; grid-template-columns: 1fr; } }
+
+/* ---------- Direction 2: Story Map ---------- */
+.s-head { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; align-items: center; padding: 0.7rem 1rem; background: var(--paper); border-bottom: 1px solid var(--line); position: relative; z-index: 6; }
+.s-head .mark { margin-right: auto; }
+.s-nav ul { display: flex; flex-wrap: wrap; gap: 0.1rem 1rem; }
+.s-nav a { text-decoration: none; font-size: 0.92rem; padding: 0.2rem 0; border-bottom: 3px solid transparent; }
+.s-nav a[aria-current="page"] { border-color: var(--trace); font-weight: 700; }
+.s-body { display: grid; }
+.s-mapwrap { position: sticky; top: 0; height: calc(var(--fh) * 0.44); z-index: 5; background: var(--sea); overflow: hidden; border-bottom: 1px solid var(--line); }
+.s-steps { padding: 0 1rem; min-width: 0; }
+.s-step { min-height: calc(var(--fh) * 0.56); display: grid; align-content: center; padding: 1.5rem 0; }
+.s-step:first-child { min-height: calc(var(--fh) * 0.5); }
+.s-card { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 1.2rem 1.35rem; display: grid; gap: 0.6rem; max-width: 34rem; transition: border-color var(--dur), transform var(--dur) var(--ease); }
+.s-step.on .s-card { border-color: var(--ink); transform: translateX(6px); }
+.s-count { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.s-card h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5cqi, 3.2rem); line-height: 1.02; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+.s-card h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.4rem, 3cqi, 1.9rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+.s-card p { margin: 0; }
+.s-card .big { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.45rem, 3.4cqi, 2.2rem); line-height: 1.12; letter-spacing: -0.01em; }
+.s-card .src { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); }
+.s-card.vv-card { border: 0; }
+.s-skip { font-size: 0.9rem; }
+.s-end { padding: 1rem 1rem 0; display: grid; gap: 1.5rem; }
+.s-end h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; margin: 0 0 0.6rem; }
+@container site (min-width: 880px) {
+  .s-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+  .s-mapwrap { grid-column: 2; grid-row: 1; height: var(--fh); border-bottom: 0; border-left: 1px solid var(--line); }
+  .s-steps { grid-column: 1; grid-row: 1; padding: 0 1.75rem; }
+  .s-step { min-height: calc(var(--fh) * 0.82); }
+}
+
+/* ---------- Direction 3: Network ---------- */
+.n-head { padding: 0.8rem 1rem 0.4rem; display: grid; gap: 0.5rem; border-bottom: 1px solid var(--line); }
+.n-top { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; }
+.n-top .mark { margin-right: auto; }
+.n-route { overflow-x: auto; scrollbar-width: thin; margin: 0 -1rem; padding: 0 1rem; }
+.n-route ul { display: flex; min-width: max-content; }
+.n-route li { position: relative; isolation: isolate; }
+.n-route li:not(:last-child)::after { content: ""; position: absolute; z-index: -1; top: calc(0.4rem + 8px); left: 50%; width: 100%; height: 5px; background: var(--trace); border-radius: 3px; }
+.n-route a { display: grid; justify-items: center; gap: 0.25rem; padding: 0.4rem 0.75rem 0.5rem; text-decoration: none; font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.n-route a::before { content: ""; width: 21px; height: 21px; border-radius: 50%; background: var(--paper); border: 5px solid var(--trace); transition: transform var(--dur) var(--ease); }
+.n-route a:hover::before { transform: scale(1.2); }
+.n-route a[aria-current="page"]::before { background: var(--trace); box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--trace); }
+.n-hero { position: relative; background: var(--sea); }
+.n-hero .n-map { height: clamp(320px, 66cqi, 680px); }
+.n-hero-text { padding: 1.5rem 1rem 1rem; display: grid; gap: 0.75rem; background: var(--paper); }
+.n-hero-text h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5.6cqi, 3.8rem); line-height: 1; letter-spacing: -0.025em; text-wrap: balance; margin: 0; }
+@container site (min-width: 900px) {
+  .n-hero-text { position: absolute; z-index: 2; left: 1.25rem; top: 1.25rem; max-width: 25rem; border-radius: var(--r-lg); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+}
+.n-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); padding: 0.6rem 1rem; background: var(--paper); border-bottom: 1px solid var(--line); }
+.n-legend span { display: inline-flex; gap: 0.4rem; align-items: center; }
+.n-legend i { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+.n-legend .lg-on { background: var(--trace); }
+.n-legend .lg-node { border: 4px solid var(--trace); }
+.n-legend .lg-hwy { width: 22px; height: 6px; border-radius: 3px; background: var(--trace); }
+.n-legend .lg-fer { width: 22px; height: 0; border-radius: 0; border-top: 4px dotted var(--trace); }
+.n-main { max-width: 64rem; margin: 0 auto; padding: 2rem 1rem 0; }
+.n-line { --prog: 1; position: relative; padding-left: 2.75rem; display: grid; gap: 2.25rem; }
+.n-line::before { content: ""; position: absolute; left: 0.85rem; top: 0; bottom: 0; width: 6px; border-radius: 3px; background: var(--surface); }
+.n-fill { position: absolute; left: 0.85rem; top: 0; bottom: 0; width: 6px; border-radius: 3px; background: var(--trace); transform-origin: top; transform: scaleY(var(--prog)); }
+.n-stop { position: relative; display: grid; gap: 0.5rem; min-width: 0; }
+.n-stop::before { content: ""; position: absolute; left: calc(-2.75rem + 0.85rem + 3px - 12px); top: 0.25rem; width: 24px; height: 24px; border-radius: 50%; background: var(--paper); border: 6px solid var(--line); transition: border-color 300ms, background 300ms; }
+.n-stop.lit::before { border-color: var(--trace); background: var(--trace); box-shadow: 0 0 0 4px var(--paper); }
+.n-stop h2 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.4rem, 3.2cqi, 2rem); line-height: 1.1; margin: 0; }
+.n-stop .stopno { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.n-pillars { display: grid; gap: 1.5rem; }
+.n-pillars .n-stop p { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.25rem, 2.8cqi, 1.7rem); line-height: 1.15; margin: 0; max-width: 30ch; }
+.n-branch { display: grid; gap: 0.75rem; }
+@container site (min-width: 700px) {
+  .n-branch { grid-template-columns: 1fr 1fr; gap: 1.25rem; position: relative; padding-top: 2.2rem; }
+  .n-branch::before { content: ""; position: absolute; left: calc(-2.75rem + 0.85rem); top: -2.25rem; height: calc(2.25rem + 1.1rem); width: calc(2.75rem - 0.85rem + 75% - 0.3rem); border-left: 6px solid var(--trace); border-bottom: 6px solid var(--trace); border-bottom-left-radius: 22px; }
+  .n-branch::after { content: ""; position: absolute; left: calc(25% - 0.3rem - 3px); top: 1.1rem; width: 6px; height: 1.1rem; background: var(--trace); }
+  .n-branch > a:last-child::before { content: ""; position: absolute; left: calc(50% - 3px); top: -1.1rem; width: 6px; height: 1.1rem; background: var(--trace); }
+}
+.n-branch a { position: relative; display: grid; gap: 0.15rem; text-decoration: none; border: 2px solid var(--trace); border-radius: var(--r-lg); padding: 0.9rem 1.1rem; }
+.n-branch .t { font-family: var(--f-display); font-weight: 800; font-size: 1.25rem; }
+.n-branch .d { font-size: 0.85rem; color: var(--muted); }
+.n-branch a:hover { background: var(--hl); }
+.n-ph { display: grid; gap: 1.25rem; align-items: center; }
+.n-ph h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 5.2cqi, 3.4rem); line-height: 1.02; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+.n-ph .lede { font-size: 1.1rem; margin: 0; max-width: 52ch; }
+.n-thumb { background: var(--sea); border-radius: var(--r-lg); overflow: hidden; aspect-ratio: 1000 / 866; max-width: 100%; width: min(100%, 22rem); }
+.n-thumb-cap { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; max-width: 22rem; }
+@container site (min-width: 760px) { .n-ph { grid-template-columns: minmax(0, 1fr) auto; } }
+.n-main .foot { margin: 3rem -1rem 0; }
+
+/* ---------- Motion off ---------- */
+.rm *, .rm *::before, .rm *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="lab">
+  <header class="lab-head">
+    <span class="kicker">Base layout · round 2</span>
+    <h1>Map layout studies</h1>
+    <p>Three ways to build the site around one map of British Columbia. Each one changes how the site is put together, not just how it looks. Click through the pages, try phone width, and scroll: the map responds.</p>
+    <p class="small">Colours and type are still stand-ins, leaning warmer and rounder. The map is real: BC Albers projection, simplified from open data, drawn into the page with no map service behind it.</p>
+  </header>
+
+  <div class="built">
+    <details>
+      <summary>What carried over from round 1</summary>
+      <ul>
+        <li>The page receipt is on every page, now with map data sources.</li>
+        <li>"Next stops" end every page.</li>
+        <li>Bold type and a big Valleyview spotlight on Home.</li>
+        <li>Pillars one at a time (Story Map, Network).</li>
+        <li>The coast-to-Rockies cross-section, now from real elevation data.</li>
+        <li>Every map shows the whole province. Kamloops, Victoria and Vancouver are marked as starting regions, never as the boundary.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>About the map data</summary>
+      <ul>
+        <li>Coastline, neighbours, highways, ferries, rivers, lakes and towns: Natural Earth (public domain).</li>
+        <li>59 school district boundaries and <span data-schools></span> standard K–12 schools: DataBC, Open Government Licence – British Columbia.</li>
+        <li>Cross-section: Copernicus DEM elevations via Open-Meteo, sampled every 1.5 km from Victoria to Kicking Horse Pass.</li>
+        <li>First Nations schools are a placeholder layer. Plotting them should come out of guidance from and partnership with First Nations education partners (R6), not out of a dataset.</li>
+        <li>Board pins are examples. Real ones appear only once members agree.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="controls">
+    <fieldset>
+      <legend>Direction</legend>
+      <div class="seg" id="dir-seg">
+        <label><input type="radio" name="dir" id="dir-atlas" value="atlas" checked><span>1 · Atlas</span></label>
+        <label><input type="radio" name="dir" id="dir-story-map" value="story-map"><span>2 · Story Map</span></label>
+        <label><input type="radio" name="dir" id="dir-network" value="network"><span>3 · Network</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Width</legend>
+      <div class="seg" id="width-seg">
+        <label><input type="radio" name="width" id="w-phone" value="390px"><span>Phone</span></label>
+        <label><input type="radio" name="width" id="w-tablet" value="768px"><span>Tablet</span></label>
+        <label><input type="radio" name="width" id="w-full" value="100%" checked><span>Full</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Check</legend>
+      <div class="checks">
+        <label><input type="checkbox" id="opt-rm"> Reduced motion</label>
+        <label><input type="checkbox" id="opt-lm"> Show landmarks</label>
+      </div>
+    </fieldset>
+  </div>
+
+  <div>
+    <div class="frame-meta"><span id="frame-label">Atlas · Home</span><span id="frame-width">Full width</span></div>
+    <div class="frame" id="frame" tabindex="-1"></div>
+  </div>
+
+  <section class="sheet" id="sheet" aria-live="polite"></section>
+</div>
+
+<script>/*__GEO__*/</script>
+<script>
+(() => {
+  // ---------- Content (from docs/SPEC.md; anything unconfirmed is a TK) ----------
+  const tk = (s) => `<span class="tk">[TK: ${s}]</span>`;
+  const NAME = tk('name');
+  const EMAIL = tk('organization email, created with the domain');
+  const N_SCHOOLS = GEO.schools.count.toLocaleString('en-CA');
+  const N_DIST = GEO.districts.length;
+  const MAXE = Math.max(...GEO.profile.e);
+  document.querySelectorAll('[data-schools]').forEach((el) => { el.textContent = N_SCHOOLS; });
+
+  const PILLARS = [
+    'Be an independent voice on technology in BC education.',
+    'Build lasting, face-to-face partnerships with educators and communities.',
+    'Help students understand, question and shape the digital world.',
+    'Empower young people to build their ideas now.',
+  ];
+  const NAV = [['home', 'Home'], ['about', 'About'], ['board', 'Board'], ['valleyview', 'Valleyview Grant'], ['funding', 'Funding'], ['contact', 'Contact']];
+
+  // Map states: a camera view plus the layers shown.
+  const VIEWS = { bc: [500, 433, 1], south: [632, 745, 3.3], transect: [708, 708, 2.6] };
+  const S = (view, layers, extra = {}) => ({ view, layers, ...extra });
+  const PILLAR_MAPS = [
+    S('bc', ['districts', 'regions']),
+    S('south', ['roads', 'regions', 'places']),
+    S('bc', ['schools']),
+    S('south', ['schools', 'regions']),
+  ];
+  const PILLAR_NOTES = [
+    `All ${N_DIST} school district boundaries.`,
+    'Highways and ferries: the routes we travel to meet people.',
+    `All ${N_SCHOOLS} K–12 schools.`,
+    'Schools around our starting regions.',
+  ];
+
+  const PAGES = {
+    home: {
+      title: 'Home',
+      map: S('bc', ['roads', 'regions', 'places']),
+      mapNote: 'Highways and ferries across the province, with our three starting regions marked.',
+      next: ['about', 'valleyview'],
+    },
+    about: {
+      title: 'About',
+      lede: tk('mission statement, pending board ratification'),
+      map: S('bc', ['districts', 'regions']),
+      mapNote: `All ${N_DIST} school district boundaries in BC, with our starting regions marked.`,
+      sections: [
+        { h: 'What we stand for', html: `<ol>${PILLARS.map((p) => `<li>${p}</li>`).join('')}</ol>`, note: 'Four pillars adopted by board vote, 15 October 2026.', map: S('bc', ['districts', 'regions']) },
+        { h: 'How we work', html: '<p>Remote-first, and in person by choice. Our starting regions are Kamloops, Victoria and Vancouver.</p>', map: S('south', ['roads', 'regions', 'places']) },
+        { h: 'Our values', html: `<p>${tk('values statement covering skepticism of ed-tech business models, transparency, privacy by default, and face-to-face over platform')}</p>`, map: S('bc', ['districts', 'regions']) },
+      ],
+      next: ['board', 'contact'],
+    },
+    board: {
+      title: 'Board',
+      lede: tk('one-line introduction to the board'),
+      map: S('south', ['board', 'regions']),
+      mapNote: 'Example pins only. Members appear on the map, by home region, once they agree to their details.',
+      sections: [
+        { h: 'Members', html: `<div class="cards">${[1, 2, 3, 4].map((n) => `<article><div class="portrait">Portrait 1:1<br>original photo</div><span class="pin">● Pin ${n} (example)</span><h3>${tk('name')}</h3><p>${tk('board role')}</p><p>${tk('home region')}</p></article>`).join('')}</div>`, note: 'A member is added only after they agree to their details. Git history is public.' },
+      ],
+      next: ['about', 'funding'],
+    },
+    valleyview: {
+      title: 'Valleyview Social Innovation Grant',
+      lede: `Funding plus mentorship for a graduating high school student with an idea. ${tk('award amount')}`,
+      map: S('bc', ['schools', 'regions']),
+      mapNote: `All ${N_SCHOOLS} K–12 schools in BC. ${tk('whether the grant is open to students province-wide')}`,
+      sections: [
+        { h: 'Who can apply', html: `<p>Graduating high school students. ${tk('full eligibility, pending board')}</p>`, note: 'Short URL for posters: /valleyview', map: S('bc', ['schools', 'regions']) },
+        { h: 'What you get', html: `<p>Funding and mentorship. ${tk('award amount and what mentorship involves')}</p>`, map: S('south', ['schools', 'regions']) },
+        { h: 'The three questions', html: "<ol><li>What's the idea?</li><li>Why are you the right person to do it?</li><li>How will this help?</li></ol>" },
+        { h: 'Timeline', html: `<dl class="timeline"><div><dt>Applications open</dt><dd>${tk('date')}</dd></div><div><dt>Applications close</dt><dd>${tk('date')}</dd></div><div><dt>Recipients told</dt><dd>${tk('date')}</dd></div></dl>` },
+        { h: 'How to apply', html: `<p>${tk('how and when to apply, pending board decision D5')}</p>`, note: 'No apply button until the board decides how applications are collected (D5).' },
+        { h: 'Questions people ask', html: `<dl class="faq"><dt>I'm nervous about pitching.</dt><dd>${tk('answer')}</dd><dt>I don't think I'm qualified.</dt><dd>${tk('answer')}</dd></dl>` },
+      ],
+      next: ['contact', 'about'],
+    },
+    funding: {
+      title: 'Funding',
+      lede: tk('funding values introduction, wording needs approval'),
+      map: S('bc', ['regions']),
+      mapNote: 'A quiet map on purpose: no funder locations until the board decides on disclosure (D11).',
+      sections: [
+        { h: 'How we fund our work', html: `<ul><li>No money from companies whose main business is selling ed-tech.</li><li>No single source large enough to shape what we say.</li><li>${tk('why we fund the organization this way')}</li></ul>`, note: 'Wording needs approval by a person.' },
+        { h: 'Who funds us', html: `<p>${tk('disclosure, pending board decision D11')}</p>` },
+      ],
+      next: ['board', 'contact'],
+    },
+    contact: {
+      title: 'Contact',
+      lede: 'Email us. There is no form on this site.',
+      map: S('south', ['roads', 'regions', 'places']),
+      mapNote: 'Our starting regions and the roads and ferries between them.',
+      sections: [
+        { h: 'Email', html: `<p>${EMAIL}</p>`, note: 'The link opens your own mail app. This site collects nothing.' },
+        { h: 'What to contact us about', html: '<ul><li>Pro-D and workshops</li><li>School visits</li><li>Partnerships</li><li>The Valleyview Grant</li><li>Media</li></ul>' },
+      ],
+      next: ['about', 'valleyview'],
+    },
+    privacy: {
+      title: 'Privacy',
+      lede: 'This site collects no personal information and sets no cookies.',
+      map: S('bc', []),
+      mapNote: 'This map is drawn into the page. Showing it sends no requests to a map service, so nobody learns you looked at it.',
+      sections: [
+        { h: 'What we collect', html: `<p>Nothing that identifies you. ${tk('anonymous page view counts and the tool, if one is used')}</p>` },
+        { h: 'Services we use', html: `<p>${tk('hosting and analytics providers, and where they are based')}</p>` },
+        { h: 'Maps', html: '<p>Our maps are drawn from open data and built into each page. There are no map tiles and no map service.</p>' },
+        { h: 'Your theme choice', html: '<p>If you choose light or dark mode, that choice is saved in your own browser only.</p>' },
+      ],
+      next: ['contact', 'home'],
+    },
+  };
+  const NEXT_DESC = { home: 'Back to the start', about: 'Who we are and what we stand for', board: 'The people behind the work', valleyview: 'Funding and mentorship for students', funding: 'How we pay for the work', contact: 'Email us', privacy: 'What this site collects (nothing)' };
+  const titleOf = (id) => PAGES[id].title;
+
+  // ---------- Shared helpers ----------
+  const navList = (page) => `<ul class="plain">${NAV.map(([id, label]) => `<li><a href="#" data-go="${id}"${id === page ? ' aria-current="page"' : ''}>${label}</a></li>`).join('')}</ul>`;
+  const skip = '<a class="skip" href="#" data-skip>Skip to content</a>';
+  const themeBtn = () => `<button type="button" class="theme-btn" data-theme-toggle>Theme: ${THEME_LABEL[theme]}</button>`;
+  const nextList = (ids) => `<nav aria-label="Next stops"><div class="next-list">${ids.map((id) => `<a href="#" data-go="${id}"><span class="t">${titleOf(id)}</span><span class="d">${NEXT_DESC[id]}</span><span class="ar" aria-hidden="true">→</span></a>`).join('')}</div></nav>`;
+  const vvCard = (extra = '') => `<div class="vv-card ${extra}"><p class="for">For graduating high school students</p><p class="url">/valleyview</p><p>The Valleyview Social Innovation Grant: funding plus mentorship to build your idea. ${tk('award amount')}</p><a class="btn" href="#" data-go="valleyview">About the grant <span aria-hidden="true">→</span></a></div>`;
+  const sectionsHTML = (p) => `<div class="prose">${p.sections.map((s) => `<section><h2>${s.h}</h2>${s.html}${s.note ? `<p class="note">${s.note}</p>` : ''}</section>`).join('')}</div>`;
+  const footer = () => `<footer class="foot" data-landmark="footer">
+      <div>
+        <h2>Contact</h2><p>${EMAIL}</p>
+        <h2>Starting regions</h2><p>Kamloops, Victoria and Vancouver, for all of BC</p>
+        <p><a href="#" data-go="privacy">Privacy</a> · <span class="ph-chip">Placeholder brand</span></p>
+        <p class="credits">Map data: Natural Earth; DataBC under the Open Government Licence – British Columbia; elevation from Copernicus DEM via Open-Meteo.</p>
+      </div>
+      <div><dl class="receipt" data-receipt><div><dt>Measuring…</dt><dd></dd></div></dl></div>
+    </footer>`;
+
+  // ---------- The map ----------
+  const REGION_NAMES = ['Kamloops', 'Victoria', 'Vancouver'];
+  const placeAt = (n) => (GEO.places.find((p) => p.n === n) || GEO.waypoints.find((p) => p.n === n)).p;
+  const dot = (p) => `M${p[0]} ${p[1]}h0`;
+  const label = (p, txt, cls, dx = 7, dy = -7) => `<g transform="translate(${p[0]} ${p[1]})"><g class="cs"><text class="${cls}" x="${dx}" y="${dy}">${txt}</text></g></g>`;
+  const BOARD_EX = [['Kamloops', 0, 0], ['Victoria', 0, 0], ['Vancouver', -4, 3], ['Vancouver', 5, -3]];
+
+  function mapSVG(o = {}) {
+    const [W, H] = GEO.vb;
+    const others = GEO.places.filter((p) => !REGION_NAMES.includes(p.n));
+    const placesG = others.map((p) => `<g class="${p.r <= 6 ? 'pl-major' : 'pl-minor'}"><path class="m-dot" d="${dot(p.p)}"/>${o.net ? `<path class="m-dot-in" d="${dot(p.p)}"/>` : ''}${label(p.p, p.n, 'm-lbl')}</g>`).join('');
+    const regionsG = REGION_NAMES.map((n, i) => { const p = placeAt(n); return `<path class="m-glow" d="${dot(p)}"/><path class="m-core" d="${dot(p)}"/>${label(p, n, 'm-rlbl', n === 'Victoria' ? 10 : 10, n === 'Victoria' ? 16 : -9)}`; }).join('');
+    const boardG = BOARD_EX.map(([n, dx, dy], i) => { const p = placeAt(n); const q = [p[0] + dx, p[1] + dy]; return `<path class="m-pin" d="${dot(q)}"/><path class="m-pin-in" d="${dot(q)}"/>`; }).join('') + label([placeAt('Kamloops')[0], placeAt('Kamloops')[1]], 'Example pins', 'm-lbl', 10, 22);
+    const tr = GEO.waypoints.map((w) => w.p.join(',')).join(' ');
+    const trDots = GEO.waypoints.filter((w) => !REGION_NAMES.includes(w.n)).map((w) => `<path class="m-dot" d="${dot(w.p)}"/>${label(w.p, w.n, 'm-lbl pl-minor', 7, w.n === 'Kicking Horse Pass' ? -9 : 14)}`).join('');
+    const dpoly = o.dpoly ? GEO.districts.map((d) => `<path class="m-dpoly" d="${d.d}"><title>School District ${d.no}: ${d.n}</title></path>`).join('') : '';
+    return `<svg class="bcmap${o.net ? ' net' : ''}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of British Columbia" ${o.id ? `id="${o.id}"` : ''}>
+      <rect class="m-sea" x="-3000" y="-3000" width="7000" height="7000"/>
+      <g class="cam">
+        <path class="m-nb" d="${GEO.neighbours}"/>
+        <path class="m-land" d="${GEO.bc}"/>
+        <path class="m-lakes" d="${GEO.lakes}"/>
+        <g class="m-l l-rivers"><path class="m-rivers" d="${GEO.rivers}"/></g>
+        <g class="m-l l-districts"><path class="m-dlines" d="${GEO.districtLines}"/>${dpoly}</g>
+        <g class="m-l l-roads"><path class="m-roads" d="${GEO.roads}"/><path class="m-ferry" d="${GEO.ferries}"/><path class="m-hwy" d="${GEO.highways}"/></g>
+        <g class="m-l l-schools"><path class="m-sch" d="${GEO.schools.pub}"/><path class="m-sch ind" d="${GEO.schools.ind}"/></g>
+        <g class="m-l l-transect"><polyline class="m-transect" points="${tr}"/>${trDots}</g>
+        <g class="m-l l-places">${placesG}</g>
+        <g class="m-l l-board">${boardG}</g>
+        <g class="m-l l-regions">${regionsG}</g>
+      </g>
+    </svg>`;
+  }
+  const LAYER_WORDS = { roads: 'highways and ferries', rivers: 'rivers', districts: 'school district boundaries', schools: 'K–12 schools', places: 'towns', regions: 'our three starting regions', board: 'example board pins', transect: 'a line from Victoria to Kicking Horse Pass' };
+  function setMap(svg, st, useLayersAttr = true) {
+    if (!svg || !st) return;
+    const [cx, cy, z] = VIEWS[st.view];
+    svg.style.setProperty('--cx', cx);
+    svg.style.setProperty('--cy', cy);
+    svg.style.setProperty('--z', z);
+    svg.dataset.zoom = z > 2 ? 'near' : 'far';
+    if (useLayersAttr) svg.setAttribute('data-l', st.layers.join(' '));
+    const where = st.view === 'bc' ? 'all of British Columbia' : st.view === 'south' ? 'southern BC, around Kamloops, Victoria and Vancouver' : 'southern BC from Victoria to the Rockies';
+    svg.setAttribute('aria-label', `Map of ${where}${st.layers.length ? ', showing ' + st.layers.map((l) => LAYER_WORDS[l]).join(', ') : ''}.`);
+  }
+
+  // Cross-section from real elevations.
+  function profileHTML() {
+    const P = GEO.profile, W = 1000, H = 200, top = 2600;
+    const x = (k) => (k / P.km) * W, y = (e) => H - (e / top) * H;
+    let line = '';
+    P.k.forEach((k, i) => { line += (i ? 'L' : 'M') + x(k).toFixed(1) + ' ' + y(P.e[i]).toFixed(1); });
+    let sea = '', run = null;
+    P.k.forEach((k, i) => {
+      if (P.e[i] === 0 && k < 110) { if (run === null) run = k; }
+      else if (run !== null) { if (k - run > 2) sea += `<rect class="p-sea" x="${x(run)}" y="${H - 6}" width="${x(k) - x(run)}" height="6"/>`; run = null; }
+    });
+    const grid = [1000, 2000].map((e) => `<line class="p-grid" x1="0" x2="${W}" y1="${y(e)}" y2="${y(e)}"/>`).join('');
+    const minor = ['Hope', 'Merritt', 'Rogers Pass'];
+    const marks = P.marks.map((m, i) => `<span class="p-mk${i % 2 ? ' up' : ''}${minor.includes(m.name) ? ' minor' : ''}" style="left:calc(3rem + (100% - 3.75rem) * ${(m.km / P.km).toFixed(4)})">${m.name}</span>`).join('');
+    const ax = [0, 1000, 2000].map((e) => `<span class="p-ax" style="top:calc(1.6rem + (100% - 3.2rem) * ${(1 - e / top).toFixed(3)})">${e.toLocaleString('en-CA')} m</span>`).join('');
+    return `<figure class="prof" id="prof" style="margin:0">
+      <span class="p-title">Victoria to Kicking Horse Pass · ${P.km} km · highest point on this line ${MAXE.toLocaleString('en-CA')} m</span>
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">${grid}<path class="p-land" d="${line} L${W} ${H} L0 ${H} Z"/>${sea}<path class="p-line" d="${line}"/></svg>
+      ${ax}${marks}
+      <span class="p-feat" style="left:calc(3rem + (100% - 3.75rem) * ${(48 / P.km).toFixed(3)}); bottom:2.1rem">Salish Sea</span>
+      <span class="p-feat" style="left:calc(3rem + (100% - 3.75rem) * ${(612 / P.km).toFixed(3)}); top:1.6rem">Selkirks</span>
+      <span class="p-feat" style="left:calc(3rem + (100% - 3.75rem) * ${(662 / P.km).toFixed(3)}); top:0.4rem; right:auto">Rockies</span>
+      <figcaption class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Elevation along a ${P.km} km line from Victoria at sea level, across the Salish Sea, the Coast Mountains and the Thompson Plateau to Kamloops, then over the Selkirk Mountains to Golden and up to Kicking Horse Pass in the Rockies. The highest point on the line is ${MAXE} metres.</figcaption>
+    </figure>`;
+  }
+
+  // ---------- Direction 1: Atlas ----------
+  const LAYERS = [
+    ['roads', 'Highways and ferries'], ['rivers', 'Rivers'], ['districts', 'School districts'], ['schools', 'K–12 schools'],
+    ['places', 'Towns'], ['regions', 'Our starting regions'], ['board', 'Board (example pins)'], ['transect', 'Coast-to-Rockies line'],
+  ];
+  function atlasSheet(page) {
+    const p = PAGES[page];
+    if (page === 'home') {
+      return `
+        <p class="eyebrow">Technology education across British Columbia</p>
+        <h1 tabindex="-1">${tk('one-sentence statement of who we are, pending the mission')}</h1>
+        <div class="map-note"><b>On the map</b>${p.mapNote}</div>
+        ${vvCard()}
+        <fieldset class="a-views">
+          <legend>Four pillars, four views of the map</legend>
+          ${PILLARS.map((t, i) => `<label><input type="radio" name="pv" value="${i}" id="pv-${i}"><span><b>Pillar ${i + 1} · ${PILLAR_NOTES[i]}</b>${t}</span></label>`).join('')}
+        </fieldset>
+        <section><h2 style="font-family:var(--f-display);font-weight:800;font-size:1.3rem;margin:0 0 .5rem">Where we work</h2><p style="margin:0">Our starting regions are Kamloops, Victoria and Vancouver. ${tk('line on working with schools across all of BC')}</p></section>
+        <p><a class="btn" href="#" data-go="contact">Contact us <span aria-hidden="true">→</span></a></p>
+        <section><h2 class="eyebrow" style="margin-bottom:.6rem">Next stops</h2>${nextList(p.next)}</section>
+        ${footer()}`;
+    }
+    return `
+      <p class="eyebrow">${NAME}</p>
+      <h1 tabindex="-1">${p.title}</h1>
+      <p class="lede">${p.lede}</p>
+      <div class="map-note"><b>On the map</b>${p.mapNote}</div>
+      ${sectionsHTML(p)}
+      <section><h2 class="eyebrow" style="margin-bottom:.6rem">Next stops</h2>${nextList(p.next)}</section>
+      ${footer()}`;
+  }
+  function renderAtlas(page) {
+    return `<div class="site d-atlas">${skip}
+      <header class="a-head" data-landmark="header">
+        <a href="#" class="mark" data-go="home">${NAME}</a>
+        <nav class="a-nav" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+        ${themeBtn()}
+      </header>
+      <div class="a-body">
+        <div class="a-mapwrap" data-landmark="map">
+          ${mapSVG({ id: 'map', dpoly: true })}
+          <details class="a-layers" id="a-layers">
+            <summary>Layers</summary>
+            <ul>
+              ${LAYERS.map(([k, t]) => `<li><label><input type="checkbox" id="ly-${k}"> ${t}</label></li>`).join('')}
+              <li><label class="off"><input type="checkbox" disabled> <span>First Nations schools<small>Not drawn. This layer should come out of guidance and partnership (R6), not a dataset.</small></span></label></li>
+            </ul>
+          </details>
+        </div>
+        <main class="a-sheet" id="mock-main" tabindex="-1" data-landmark="main">${atlasSheet(page)}</main>
+      </div>
+    </div>`;
+  }
+  function atlasApply(st) {
+    const svg = frame.querySelector('#map');
+    setMap(svg, st, false);
+    LAYERS.forEach(([k]) => { const c = frame.querySelector(`#ly-${k}`); if (c) c.checked = st.layers.includes(k); });
+  }
+  function atlasGo(pg) {
+    frame.querySelector('.a-sheet').innerHTML = atlasSheet(pg);
+    frame.querySelectorAll('.a-nav a').forEach((a) => { if (a.dataset.go === pg) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    atlasApply(PAGES[pg].map);
+  }
+  function initAtlas() {
+    if (frame.clientWidth >= 880) frame.querySelector('#a-layers').open = true;
+    atlasApply(PAGES[page].map);
+  }
+
+  // ---------- Direction 2: Story Map ----------
+  function storySteps(page) {
+    if (page === 'home') {
+      const steps = [
+        { st: S('bc', ['places']), html: `<p class="eyebrow">Technology education across British Columbia</p><h1 tabindex="-1">${tk('one-sentence statement of who we are, pending the mission')}</h1><p>Scroll to move through the province. <a class="s-skip" href="#" data-go="valleyview">Or go straight to the Valleyview Grant.</a></p>` },
+        { st: S('bc', ['districts', 'schools']), html: `<h2>${N_DIST} school districts.<br>${N_SCHOOLS} schools.</h2><p>Every district and every school in BC, from the coast to the Rockies and north to the Yukon border. ${tk('line on who this work is for')}</p><p class="src">DataBC: district boundaries and standard public and independent K–12 schools.</p>` },
+        { st: S('south', ['regions', 'places', 'districts']), html: `<h2>We're starting here.</h2><p>Kamloops, Victoria and Vancouver are our starting regions: where we can meet people in person and try ideas first.</p>` },
+        ...PILLARS.map((t, i) => ({ st: PILLAR_MAPS[i], html: `<span class="s-count">Pillar ${i + 1} of 4</span><p class="big">${t}</p><p class="src">On the map: ${PILLAR_NOTES[i].toLowerCase()}</p>` })),
+        { st: S('transect', ['transect', 'regions'], { profile: true }), html: `<h2>From the coast to the Rockies</h2><p>${GEO.profile.km} km from Victoria to Kicking Horse Pass on the Alberta border. This one line climbs from sea level to ${MAXE.toLocaleString('en-CA')} m.</p><p class="src">Copernicus DEM elevations, sampled every 1.5 km.</p>` },
+        { st: S('bc', ['schools', 'regions']), card: 'vv-card', html: vvCard().replace(/^<div class="vv-card ">|<\/div>$/g, '') },
+        { st: S('south', ['roads', 'regions', 'places']), html: `<h2>Planning Pro-D, a school visit or a partnership?</h2><p><a class="btn" href="#" data-go="contact">Contact us <span aria-hidden="true">→</span></a></p>` },
+      ];
+      return steps;
+    }
+    const p = PAGES[page];
+    return [
+      { st: p.map, html: `<p class="eyebrow">${NAME}</p><h1 tabindex="-1">${p.title}</h1><p>${p.lede}</p><p class="src">On the map: ${p.mapNote}</p>` },
+      ...p.sections.map((s) => ({ st: s.map || p.map, html: `<h2>${s.h}</h2>${s.html}${s.note ? `<p class="src">${s.note}</p>` : ''}` })),
+    ];
+  }
+  let STEPS = [];
+  function renderStory(page) {
+    STEPS = storySteps(page);
+    return `<div class="site d-story">${skip}
+      <header class="s-head" data-landmark="header">
+        <a href="#" class="mark" data-go="home">${NAME}</a>
+        <nav class="s-nav" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+        ${themeBtn()}
+      </header>
+      <div class="s-body">
+        <div class="s-mapwrap" data-landmark="map">${mapSVG({ id: 'map' })}${profileHTML()}</div>
+        <main class="s-steps" id="mock-main" tabindex="-1" data-landmark="main">
+          ${STEPS.map((s, i) => `<section class="s-step" data-step="${i}"><div class="s-card ${s.card || ''}">${s.html}</div></section>`).join('')}
+          <div class="s-end"><div><h2>Next stops</h2>${nextList(PAGES[page].next)}</div></div>
+          ${footer()}
+        </main>
+      </div>
+    </div>`;
+  }
+  let storyObs = null;
+  function storyActivate(i) {
+    const st = STEPS[i];
+    if (!st) return;
+    frame.querySelectorAll('.s-step').forEach((el) => el.classList.toggle('on', Number(el.dataset.step) === i));
+    setMap(frame.querySelector('#map'), st.st);
+    frame.querySelector('#prof').classList.toggle('on', !!st.st.profile);
+  }
+  function initStory() {
+    if (storyObs) storyObs.disconnect();
+    const wide = frame.clientWidth >= 880;
+    storyObs = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) storyActivate(Number(en.target.dataset.step)); });
+    }, { root: frame, rootMargin: wide ? '-45% 0px -50% 0px' : '-62% 0px -33% 0px', threshold: 0 });
+    frame.querySelectorAll('.s-step').forEach((el) => storyObs.observe(el));
+    storyActivate(0);
+  }
+
+  // ---------- Direction 3: Network ----------
+  function renderNetwork(page) {
+    const p = PAGES[page];
+    let main;
+    if (page === 'home') {
+      main = `
+        <div class="n-hero">
+          <div class="n-hero-text">
+            <p class="eyebrow">Technology education across British Columbia</p>
+            <h1 tabindex="-1">${tk('one-sentence statement of who we are, pending the mission')}</h1>
+            <p style="margin:0">Starting in Kamloops, Victoria and Vancouver. ${tk('line on working across all of BC')}</p>
+          </div>
+          <div class="n-map">${mapSVG({ id: 'map', net: true })}</div>
+        </div>
+        <div class="n-legend" aria-label="Map legend"><span><i class="lg-on"></i>Starting regions</span><span><i class="lg-node"></i>Towns</span><span><i class="lg-hwy"></i>Highways</span><span><i class="lg-fer"></i>Ferries</span><span>Real routes from Natural Earth</span></div>
+        <div class="n-main">
+          <div class="n-line" id="n-line"><span class="n-fill" aria-hidden="true"></span>
+            <section class="n-stop"><span class="stopno">Stop 1</span><h2>What we stand for</h2></section>
+            <div class="n-pillars">${PILLARS.map((t, i) => `<div class="n-stop"><span class="stopno">Pillar ${i + 1} of 4</span><p>${t}</p><a href="#" data-go="about">More on About</a></div>`).join('')}</div>
+            <section class="n-stop"><span class="stopno">Stop 2</span><h2>For students</h2>${vvCard()}</section>
+            <section class="n-stop"><span class="stopno">Stop 3</span><h2>Planning Pro-D, a school visit or a partnership?</h2><p><a class="btn" href="#" data-go="contact">Contact us <span aria-hidden="true">→</span></a></p></section>
+            <section class="n-stop"><span class="stopno">Next stops</span><h2>Where to next</h2></section>
+            <nav class="n-branch" aria-label="Next stops">${p.next.map((id) => `<a href="#" data-go="${id}"><span class="t">${titleOf(id)} →</span><span class="d">${NEXT_DESC[id]}</span></a>`).join('')}</nav>
+          </div>
+          ${footer()}
+        </div>`;
+    } else {
+      main = `
+        <div class="n-main">
+          <div class="n-ph">
+            <div style="display:grid;gap:.75rem"><p class="eyebrow">${NAME}</p><h1 tabindex="-1">${p.title}</h1><p class="lede">${p.lede}</p></div>
+            <div><div class="n-thumb">${mapSVG({ id: 'map', net: true })}</div><p class="n-thumb-cap">${p.mapNote}</p></div>
+          </div>
+          <div class="n-line" id="n-line" style="margin-top:2.5rem"><span class="n-fill" aria-hidden="true"></span>
+            ${p.sections.map((s, i) => `<section class="n-stop"><span class="stopno">Stop ${i + 1}</span><h2>${s.h}</h2>${s.html}${s.note ? `<p class="note">${s.note}</p>` : ''}</section>`).join('')}
+            <section class="n-stop"><span class="stopno">Next stops</span><h2>Where to next</h2></section>
+            <nav class="n-branch" aria-label="Next stops">${p.next.map((id) => `<a href="#" data-go="${id}"><span class="t">${titleOf(id)} →</span><span class="d">${NEXT_DESC[id]}</span></a>`).join('')}</nav>
+          </div>
+          ${footer()}
+        </div>`;
+    }
+    return `<div class="site d-network">${skip}
+      <header class="n-head" data-landmark="header">
+        <div class="n-top"><a href="#" class="mark" data-go="home">${NAME}</a>${themeBtn()}</div>
+        <nav class="n-route" aria-label="Main" data-landmark="nav">${navList(page)}</nav>
+      </header>
+      <main id="mock-main" tabindex="-1" data-landmark="main">${main}</main>
+    </div>`;
+  }
+  function initNetwork() {
+    const st = page === 'home' ? S('bc', ['roads', 'regions', 'places']) : PAGES[page].map;
+    setMap(frame.querySelector('#map'), st);
+    const cur = frame.querySelector('.n-route [aria-current]');
+    if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+    frame.scrollTop = 0;
+    updateNetwork();
+  }
+  function updateNetwork() {
+    const line = frame.querySelector('#n-line');
+    if (!line) return;
+    const fr = frame.getBoundingClientRect(), r = line.getBoundingClientRect();
+    const mark = fr.top + fr.height * 0.6;
+    line.style.setProperty('--prog', Math.min(1, Math.max(0, (mark - r.top) / r.height)).toFixed(4));
+    line.querySelectorAll('.n-stop').forEach((s) => s.classList.toggle('lit', s.getBoundingClientRect().top < mark));
+  }
+
+  // ---------- Page receipt ----------
+  function fillReceipt() {
+    let bytes = 0, third = new Set(), scripts = 0;
+    try {
+      const nav = performance.getEntriesByType('navigation')[0];
+      if (nav) bytes += nav.transferSize || nav.encodedBodySize || 0;
+      for (const r of performance.getEntriesByType('resource')) {
+        bytes += r.transferSize || r.encodedBodySize || 0;
+        try { const u = new URL(r.name); if (u.origin !== location.origin) third.add(u.hostname); } catch (e) {}
+      }
+      scripts = document.scripts.length;
+    } catch (e) {}
+    let cookies = 0;
+    try { cookies = document.cookie ? document.cookie.split(';').filter(Boolean).length : 0; } catch (e) {}
+    const kb = bytes ? `${Math.round(bytes / 1024)} KB` : 'not reported';
+    const html = `
+      <span class="rt">Page receipt</span>
+      <div><dt>Transferred</dt><dd>${kb}</dd></div>
+      <div><dt>Map drawn from</dt><dd>${Math.round(document.scripts[0].text.length / 1024)} KB of open data</dd></div>
+      <div><dt>Map service requests</dt><dd>0</dd></div>
+      <div><dt>Cookies set</dt><dd>${cookies}</dd></div>
+      <div><dt>Tracking identifiers</dt><dd>0</dd></div>
+      <div><dt>Third-party requests</dt><dd>${third.size}</dd></div>
+      <div><dt>Saved in your browser</dt><dd>Theme choice</dd></div>
+      <p class="rnote">Measured live in this prototype${third.size ? `. Third parties: ${[...third].join(', ')}. The prototype loads fonts from Google; the real site self-hosts them, so this would read 0` : ''}. The prototype also keeps your study notes in this browser.</p>`;
+    frame.querySelectorAll('[data-receipt]').forEach((el) => { el.innerHTML = html; });
+  }
+
+  // ---------- Study sheets ----------
+  const STUDIES = {
+    atlas: {
+      name: 'Atlas',
+      sum: 'One map of BC sits behind every page, and pages are sheets laid over it.',
+      facts: [
+        ['The idea', 'The map is the place you are, not a picture on the page. Changing page moves the map: Board flies to where members are based, Valleyview shows every school, Contact shows the roads between regions. Visitors can switch layers on and off, and each pillar is a different view of the province.'],
+        ['Why it could be ours', 'Every layer you described has an obvious home here: regions, districts, schools, board members, the network, later the policy map, and a reconciliation layer done in partnership. The map grows with the organization instead of being redrawn.'],
+        ['Without JavaScript', 'Each page is a static page with its map drawn at build time in the right view. The layer switches run on CSS alone. Native view transitions animate the move between pages where browsers support it; elsewhere the next page simply loads.'],
+        ['Cost to build', 'Medium. One map component that takes a view and a set of layers, a build step that turns open data into SVG, and decision record 0003 for view transitions. Layout is two regions (map and sheet), which is simple.'],
+        ['Risks', 'The map takes space from text on phones (here, a band at the top). Long pages read worse in a side sheet. The map can never be the only way to get information, so every layer needs a text version: a list of districts, a table of schools.'],
+      ],
+      keep: ['Persistent map behind every page', 'Map moves when you change page', 'Layers panel visitors control', 'Sheet beside the map (under it on phones)', 'Pillars as four views of the map', '"On the map" note on each page'],
+    },
+    'story-map': {
+      name: 'Story Map',
+      sum: 'Pages are told as stories, with the map pinned while you scroll.',
+      facts: [
+        ['The idea', 'Each step of the text changes what the map shows. Home starts with every district and school in the province, then zooms to where we are starting, then walks through the pillars one at a time. Near the end the map draws a line from Victoria to the Rockies and the real cross-section rises out of it.'],
+        ['Why it could be ours', 'It answers "walk me through the pillars". It also tells the province-wide story in the right order: all of BC first, then where we start. The top-down map and the side-on profile meet in one moment.'],
+        ['Without JavaScript', 'Steps read as normal sections and the map shows its first view. With reduced motion the map changes instantly instead of flying.'],
+        ['Cost to build', 'Medium to high. Every page needs story steps written with map states, which is a writing job as much as a code one. The scroll logic itself is small.'],
+        ['Risks', 'Scroll stories feel slow to people who want to scan, so each needs a skip link. Hard to do well on every page; it may belong on Home and a few feature pages, with plainer inner pages. The map band on phones is small.'],
+      ],
+      keep: ['Map pinned while the story scrolls', 'Pillars one step at a time', 'All of BC first, then zoom to starting regions', 'Map line turning into the cross-section', 'Real counts from the data', 'Story on Home only, plainer inner pages'],
+    },
+    network: {
+      name: 'Network',
+      sum: 'The road and ferry network is the identity and the way you move through the site.',
+      facts: [
+        ['The idea', 'Real highways and ferry routes are drawn as thick traces, and towns are nodes. The main navigation is a line with a stop for each page. A trace runs down every page, lighting up section by section as you scroll, and at the end it branches into two next stops.'],
+        ['Why it could be ours', 'It brings together the circuit-trace idea and real BC routes. It makes "one conversation leads to more" the way the site works. A vertical trace suits a narrow phone screen.'],
+        ['Without JavaScript', 'All static. The scroll-lit trace is extra; without JavaScript it shows fully lit.'],
+        ['Cost to build', 'Low to medium. The map component with fewer layers, one trace layout primitive, and next-stops data per page.'],
+        ['Risks', 'A horizontal route-line nav scrolls sideways on phones, so some pages start off-screen; test it at phone width. Trace decoration on every page could get repetitive. Transit-map styling is common, so it has to be clearly BC and hand-drawn to feel like ours.'],
+      ],
+      keep: ['Highways as traces, towns as nodes', 'Navigation as a line with stops', 'Trace running down each page', 'Next stops branching in two', 'Map thumbnail on each inner page'],
+    },
+  };
+  const NOTES_KEY = 'layout-studies-r2-notes';
+  let notes = {};
+  try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') || {}; } catch (e) { notes = {}; }
+  const saveNotes = () => { try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch (e) {} };
+  function renderSheet() {
+    const s = STUDIES[dir];
+    const n = notes[dir] || { keep: [], text: '' };
+    sheet.innerHTML = `
+      <div>
+        <span class="kicker">Direction ${DIRS.indexOf(dir) + 1} of 3</span>
+        <h2>${s.name}</h2>
+        <p class="sum">${s.sum}</p>
+        <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+      </div>
+      <div class="keep">
+        <fieldset>
+          <legend>Parts worth keeping</legend>
+          ${s.keep.map((k, i) => `<label><input type="checkbox" id="keep-${dir}-${i}" data-keep="${i}"${n.keep.includes(i) ? ' checked' : ''}> ${k}</label>`).join('')}
+        </fieldset>
+        <div>
+          <label class="lbl" for="notes-${dir}">Your notes on ${s.name}</label>
+          <textarea id="notes-${dir}" data-notes placeholder="What works, what doesn't, what you'd change">${(n.text || '').replace(/</g, '&lt;')}</textarea>
+        </div>
+        <p class="mix">These mix too. One option: the Atlas map component everywhere, the Story Map treatment on Home only, and Network traces as the brand's drawing style.</p>
+        <div class="copy-row">
+          <button type="button" class="lab-btn" id="copy-notes">Copy notes from all three</button>
+          <span class="copy-status" id="copy-status" role="status"></span>
+        </div>
+        <textarea class="copy-out" id="copy-out" readonly hidden aria-label="Your notes, ready to copy"></textarea>
+      </div>`;
+  }
+  function notesText() {
+    const lines = ['Map layout studies (round 2) feedback', ''];
+    for (const [id, s] of Object.entries(STUDIES)) {
+      const n = notes[id] || { keep: [], text: '' };
+      lines.push(s.name);
+      lines.push(`  Keep: ${n.keep.length ? n.keep.map((i) => s.keep[i]).join('; ') : '(none ticked)'}`);
+      lines.push(`  Notes: ${n.text ? n.text.trim().replace(/\n/g, ' / ') : '(none)'}`);
+      lines.push('');
+    }
+    return lines.join('\n');
+  }
+
+  // ---------- State and wiring ----------
+  const frame = document.getElementById('frame');
+  const sheet = document.getElementById('sheet');
+  const DIRS = ['atlas', 'story-map', 'network'];
+  const RENDER = { atlas: renderAtlas, 'story-map': renderStory, network: renderNetwork };
+  const INIT = { atlas: initAtlas, 'story-map': initStory, network: initNetwork };
+  const THEME_KEY = 'layout-studies-theme';
+  const THEME_LABEL = { system: 'System', light: 'Light', dark: 'Dark' };
+  let theme = 'system';
+  try { theme = localStorage.getItem(THEME_KEY) || 'system'; } catch (e) {}
+  if (!THEME_LABEL[theme]) theme = 'system';
+  let dir = DIRS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'atlas';
+  let page = 'home';
+  const applyTheme = () => {
+    if (theme === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', theme);
+  };
+  const labelFrame = () => { document.getElementById('frame-label').textContent = `${STUDIES[dir].name} · ${titleOf(page)}`; };
+
+  function render(focus) {
+    frame.innerHTML = RENDER[dir](page);
+    frame.scrollTop = 0;
+    labelFrame();
+    INIT[dir]();
+    fillReceipt();
+    if (focus) { const h = frame.querySelector('h1'); if (h) h.focus({ preventScroll: true }); }
+  }
+  function go(pg) {
+    page = pg;
+    if (dir === 'atlas' && frame.querySelector('.d-atlas')) {
+      atlasGo(pg);
+      labelFrame();
+      fillReceipt();
+      frame.scrollTop = 0;
+      const h = frame.querySelector('.a-sheet h1'); if (h) h.focus({ preventScroll: true });
+      return;
+    }
+    render(true);
+  }
+  function setDir(d) {
+    dir = d;
+    document.getElementById(`dir-${d}`).checked = true;
+    page = 'home';
+    render(false);
+    renderSheet();
+  }
+
+  let ticking = false;
+  frame.addEventListener('scroll', () => {
+    if (ticking || dir !== 'network') return;
+    ticking = true;
+    requestAnimationFrame(() => { updateNetwork(); ticking = false; });
+  });
+  frame.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-go]');
+    if (g) { e.preventDefault(); go(g.dataset.go); return; }
+    if (e.target.closest('[data-skip]')) { e.preventDefault(); const m = frame.querySelector('#mock-main'); if (m) m.focus(); return; }
+    if (e.target.closest('[data-theme-toggle]')) {
+      theme = { system: 'light', light: 'dark', dark: 'system' }[theme];
+      try { localStorage.setItem(THEME_KEY, theme); } catch (err) {}
+      applyTheme();
+      frame.querySelectorAll('[data-theme-toggle]').forEach((b) => { b.textContent = `Theme: ${THEME_LABEL[theme]}`; });
+    }
+  });
+  frame.addEventListener('change', (e) => {
+    if (e.target.name === 'pv') atlasApply(PILLAR_MAPS[Number(e.target.value)]);
+    if (e.target.id && e.target.id.startsWith('ly-')) {
+      const svg = frame.querySelector('#map');
+      const on = LAYERS.filter(([k]) => frame.querySelector(`#ly-${k}`).checked).map(([k]) => k);
+      svg.setAttribute('aria-label', `Map of British Columbia${on.length ? ', showing ' + on.map((l) => LAYER_WORDS[l]).join(', ') : ''}.`);
+    }
+  });
+
+  document.getElementById('dir-seg').addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', () => {
+    const d = location.hash.slice(1);
+    if (DIRS.includes(d) && d !== dir) setDir(d);
+  });
+  document.getElementById('width-seg').addEventListener('change', (e) => {
+    frame.style.setProperty('--w', e.target.value);
+    document.getElementById('frame-width').textContent = e.target.value === '100%' ? 'Full width' : `${e.target.value.replace('px', ' px')} wide`;
+    setTimeout(() => { if (dir === 'story-map') initStory(); if (dir === 'network') updateNetwork(); }, 320);
+  });
+  document.getElementById('opt-rm').addEventListener('change', (e) => frame.classList.toggle('rm', e.target.checked));
+  document.getElementById('opt-lm').addEventListener('change', (e) => frame.classList.toggle('show-landmarks', e.target.checked));
+
+  sheet.addEventListener('change', (e) => {
+    const k = e.target.closest('[data-keep]');
+    if (!k) return;
+    const n = (notes[dir] = notes[dir] || { keep: [], text: '' });
+    const i = Number(k.dataset.keep);
+    n.keep = k.checked ? [...new Set([...n.keep, i])].sort() : n.keep.filter((x) => x !== i);
+    saveNotes();
+  });
+  sheet.addEventListener('input', (e) => {
+    if (!e.target.matches('[data-notes]')) return;
+    (notes[dir] = notes[dir] || { keep: [], text: '' }).text = e.target.value;
+    saveNotes();
+  });
+  sheet.addEventListener('click', (e) => {
+    if (!e.target.closest('#copy-notes')) return;
+    const text = notesText();
+    const status = document.getElementById('copy-status');
+    const out = document.getElementById('copy-out');
+    const fallback = () => { out.hidden = false; out.value = text; out.focus(); out.select(); status.textContent = 'Copying is blocked here. The notes are selected below; copy them yourself.'; };
+    try { navigator.clipboard.writeText(text).then(() => { status.textContent = 'Copied. Paste them into the chat.'; }, fallback); } catch (err) { fallback(); }
+  });
+
+  applyTheme();
+  setDir(dir);
+})();
+</script>

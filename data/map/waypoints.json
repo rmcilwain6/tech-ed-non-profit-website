@@ -1,0 +1,11 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1195374,382769]},"properties":{"name":"Victoria"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1209596,478335]},"properties":{"name":"Vancouver"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1330992,495622]},"properties":{"name":"Hope"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1372210,579943]},"properties":{"name":"Merritt"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1400291,644833]},"properties":{"name":"Kamloops"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1546161,694995]},"properties":{"name":"Revelstoke"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1589220,733943]},"properties":{"name":"Rogers Pass"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1627775,738289]},"properties":{"name":"Golden"}},
+{"type":"Feature","geometry":{"type":"Point","coordinates":[1672020,761603]},"properties":{"name":"Kicking Horse Pass"}}
+]}
